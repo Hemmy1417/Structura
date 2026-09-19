@@ -25,10 +25,17 @@ describe("amounts", () => {
 
 describe("time", () => {
   it("spells dates by hand in UTC, the same in every browser", () => {
-    expect(present.day("2026-09-19T23:30:00Z")).toBe("19 Sep 2026");
-    expect(present.moment("2026-09-19T15:24:07Z")).toBe("19 Sep 2026, 15:24 UTC");
-    expect(present.day(null)).toBe("");
-    expect(present.day("garbage")).toBe("");
+    // In a browser at UTC+14 these moments are already the next day locally.
+    const zone = process.env.TZ;
+    process.env.TZ = "Pacific/Kiritimati";
+    try {
+      expect(present.day("2026-09-19T23:30:00Z")).toBe("19 Sep 2026");
+      expect(present.moment("2026-09-19T15:24:07Z")).toBe("19 Sep 2026, 15:24 UTC");
+      expect(present.day(null)).toBe("");
+      expect(present.day("garbage")).toBe("");
+    } finally {
+      process.env.TZ = zone;
+    }
   });
 
   it("reads durations and relative times in words", () => {

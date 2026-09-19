@@ -63,6 +63,13 @@ describe("the claim", () => {
     expect(q.verification.status).toBe("verified");
   });
 
+  it("simulates and totals with any value the write carries", async () => {
+    const { client, wrapped } = setup({}, quote({ userValue: 5n, total: 105n }));
+    const q = await wrapped.estimate({}, claim);
+    expect(client.estimateTransactionFeesForWrite).toHaveBeenCalledWith(expect.objectContaining({ value: 5n }));
+    expect(q.total).toBe(155n);
+  });
+
   it("does not claim a policy check the simulated caps no longer match", async () => {
     const { wrapped } = setup({ distribution: distribution({ maxPriceGenPerTimeUnit: 99n }) });
     expect((await wrapped.estimate({}, claim)).verification.status).toBe("unavailable");

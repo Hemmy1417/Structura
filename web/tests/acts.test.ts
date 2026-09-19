@@ -144,7 +144,10 @@ describe("milestone acts across the clock", () => {
     expect(appeal(two)).toMatchObject({ available: true });
     expect(appeal([...two, item(5, "CONTRACTOR")])).toMatchObject({ available: false, reason: expect.stringMatching(/new assessment/) });
     // Declarations and the other parties' items never count against it.
-    expect(appeal([...two, item(5, "CONTRACTOR", "DECLARATION"), item(6, "CLIENT"), item(7, "CLIENT")])).toMatchObject({ available: true });
+    const docs = [item(5, "CONTRACTOR", "DOCUMENT"), item(6, "CONTRACTOR", "DOCUMENT")];
+    expect(appeal([...two, ...docs, item(7, "CONTRACTOR", "DECLARATION"), item(8, "CLIENT"), item(9, "CLIENT")]))
+      .toMatchObject({ available: true });
+    expect(appeal([...two, ...docs, item(7, "CONTRACTOR", "DOCUMENT")])).toMatchObject({ available: false });
   });
 
   it("closes the appeal a minute early so a late signature cannot land after the window", () => {

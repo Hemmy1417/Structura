@@ -1,0 +1,8 @@
+{
+  "name": "structura-probes",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "genlayer-js": "2.0.0-rc.1"
+  }
+}

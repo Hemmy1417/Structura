@@ -11,7 +11,7 @@ it deliberately does not claim to know.
 | IMAGE, origin VIDEO_FRAME | a frame taken from a video, naming the video and the time | the frame's bytes | 400,000 bytes | same |
 | IMAGE, origin SCAN | a scanned page: a report, a delivery note, a drawing | the page's bytes | 400,000 bytes | same |
 | DOCUMENT | a document's text, with an optional reference such as a report or drawing number | the text | 6,000 characters | not empty |
-| DECLARATION | a party's own statement about its case | the text | 2,000 characters | not empty |
+| DECLARATION | a party's own statement for the record, shown to everyone and read by no round | the text | 2,000 characters | not empty |
 
 The contract stores images itself. [PROBE-REPORT](PROBE-REPORT.md) sections 2 to 5 show why:
 GenVM's model gateway accepts only PNG and JFIF JPEG, the runtime cannot decode JPEG to
@@ -50,7 +50,8 @@ Checked in code, at filing:
   [state-machine](state-machine.md));
 - the party has room left in its own quota for this version of the terms (contractor 12
   images and 6 texts, client 3 and 3, inspector 3 and 3), so no party can use up another's;
-- during an appeal, the contractor adds at most 2 images and 2 texts;
+- during an appeal, the contractor adds at most 2 images and 2 documents (declarations do not
+  count: no round reads them);
 - an item offered for a requirement matches it: images for an image requirement, documents or
   scanned pages for a document requirement, from the party the requirement names;
 - the image's format and size, and the text's length.
@@ -60,8 +61,9 @@ Checked by the panel, every round:
 - what each image actually shows, criterion by criterion;
 - whether an image shows what it is offered as (a mismatch counts against the case it was
   offered for);
-- whether images appear to come from different sites, or a document's factual content
-  contradicts the images.
+- whether images appear to come from different sites, or an inspector's report contradicts
+  the images. A caption or a document the client or the contractor wrote is that party's own
+  account: it can neither establish a criterion nor create a conflict by itself.
 
 Not knowable by anyone reading the record, and never claimed:
 
@@ -73,12 +75,17 @@ Not knowable by anyone reading the record, and never claimed:
 
 ## How evidence reaches a round
 
-- **An assessment** reads the contractor's named items (at most 4 images and 4 texts) and every
-  item the client and the inspector filed for the version, automatically. The contractor cannot
-  leave the other side's evidence out.
-- **An appeal** reads the evidence recorded for the decision it reviews plus every item filed
-  since that decision, from every party. The round record marks each item as reconsidered or
-  new.
+- **An assessment** reads the contractor's named items (at most 4 images and 4 documents) and
+  every image and document the client and the inspector filed for the version, automatically.
+  The contractor cannot leave the other side's evidence out.
+- **An appeal** reads the evidence recorded for the decision it reviews plus every image and
+  document filed since that decision, from every party. The round record marks each item as
+  reconsidered or new.
+- **No round reads a declaration.** A declaration is a party's statement for the record:
+  stored, hashed and shown to everyone. By the contract's own rule a party's word can neither
+  establish nor contest a criterion, so it is kept out of the panel's reach by construction
+  rather than by instruction; argument belongs in an appeal's reason, which the panel reads as
+  argument. `request_assessment` refuses to name one.
 - The most one round can read is 12 images and 12 texts: 4 named contractor items, 2 contractor
   appeal additions, and the client's and inspector's full quotas. Images go to the model two per
   prompt, the runtime's limit.

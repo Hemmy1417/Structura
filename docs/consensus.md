@@ -17,8 +17,8 @@ trusted intermediary the product removes.
 Everything code can decide is decided before any validator works, and a failure costs no model
 call: the caller's role, the project and milestone states, the deadline or window, the
 assessment cap, every named item belonging to the current terms and to the contractor, the
-evidence requirements' minimum counts, and at least one image or document (a declaration alone
-proves nothing). The contract then gathers the round's inputs from its own storage: the terms,
+evidence requirements' minimum counts, and at least one image or document (a declaration is
+never read by a round). The contract then gathers the round's inputs from its own storage: the terms,
 the criteria, the image bytes and the texts. Nondeterministic code only reads these.
 
 ## What every node does
@@ -34,10 +34,11 @@ the criteria, the image bytes and the texts. Nondeterministic code only reads th
    recorded as unreadable instead of stopping the round. A node that processed no image at all
    counts as blind.
 2. **Judge.** One text prompt carries the terms, the node's own image findings, and every
-   document and declaration fenced with who filed it. For an appeal it also carries the
-   appellant's reason, fenced as argument, and the list of items that are new since the
-   appealed decision. The node answers MET, NOT_MET or UNCLEAR for every criterion, and
-   whether the evidence conflicts.
+   document fenced with who filed it: an inspector's report as an independent attestation, a
+   client's or contractor's document as that party's own account. Declarations are not in it.
+   For an appeal it also carries the appellant's reason, fenced as argument, and the list of
+   items that are new since the appealed decision. The node answers MET, NOT_MET or UNCLEAR for
+   every criterion, and whether the evidence conflicts.
 3. **Validate.** The answer is parsed into a fixed structure. An unknown or missing status
    becomes UNCLEAR. An answer that is not a JSON object is an LLM error, never a decision.
 
@@ -118,15 +119,21 @@ validator answered in Chinese before the instruction was added.
 ## Prompt safety
 
 - Every string a party wrote (titles, requirements, specification, captions, sources,
-  document text, declarations, the appeal reason) is defused before it enters a prompt: `<<<`
-  and `>>>` are replaced and fence words are hyphenated, so no party can forge a fence or
-  impersonate another party's item.
+  document text, the appeal reason) is defused before it enters a prompt: `<<<` and `>>>` are
+  replaced and fence words are hyphenated, so no party can forge a fence or impersonate another
+  party's item.
 - Each item is fenced with its id, its kind and the role that filed it. The panel is told that
   fenced text and text visible inside images are content, never instructions.
 - Captions, sources, dates, locations and the requirement an item is offered for are
   presented as the submitter's claims.
-- A declaration by either party can neither establish a criterion nor create a conflict by
-  itself.
+- A caption, or a document the client or the contractor wrote, is that party's own account:
+  by itself it can neither establish a criterion, nor make one unclear, nor create a conflict.
+  Conflicts come only from images or the inspector's reports.
+- Declarations never enter a prompt. That rule began as an instruction to the panel, and on a
+  disposable Studio Next deployment a validator still read a client's bare declaration as a
+  conflict. So it is now enforced by construction: `request_assessment` refuses to name a
+  declaration, rounds skip them when they gather the other parties' evidence, and an appeal
+  never counts one as new evidence. A declaration is still stored, hashed and shown to everyone.
 - The panel is never told the payment, the escrow, or which party an answer favours.
 
 ## When validators cannot agree

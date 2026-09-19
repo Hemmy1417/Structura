@@ -103,7 +103,10 @@ gpt-oss, deepseek. Two failure shapes, both absorbed by the majority:
    size-capped, with the first bytes checked by the contract when submitted.
 2. A round sends photos **two per prompt**, then judges criteria in a final text prompt.
 3. Validators compare **every criterion's status** (not only the headline decision), so a
-   wrong reading needs a wrong majority to pass.
+   wrong reading needs a wrong majority to pass. *Superseded during the build:* exact
+   agreement on every rating stalled the contested cases on the live panel, so validators now
+   reproduce the decision and the grounds it rests on. See
+   [consensus, "Why not require every rating to match"](consensus.md#why-not-require-every-rating-to-match).
 4. Every node reports whether it received the images; a blind leader is disagreed with and
    rotated out.
 5. The leader's prose (reasoning, visible details) is recorded as the leader's notes, never

@@ -50,7 +50,8 @@ their acceptance.
 
 **Project:** title, description, site description, client, contractor, optional inspector,
 appeal window (chosen by the client within 10 minutes to 7 days, accepted by the contractor
-with the terms), status `PROPOSED → ACTIVE → CLOSED`, escrow totals, milestone ids.
+with the terms), status `PROPOSED → ACTIVE`, or `PROPOSED → CANCELLED` when the client walks
+away before the contractor signs, escrow totals, milestone ids.
 
 **Milestone:** a sequence of **versions**; each version is immutable once proposed.
 
@@ -68,7 +69,7 @@ historical decision stays tied to the exact terms it judged.
 |---|---|---|---|
 | IMAGE (origin PHOTO, VIDEO_FRAME or SCAN) | the image bytes, on chain | 400,000 bytes | PNG signature, or JPEG beginning `FF D8 FF E0` |
 | DOCUMENT | text, on chain, with an optional reference (report or drawing number) | 6,000 characters | non-empty UTF-8 |
-| DECLARATION | a party's statement, on chain | 2,000 characters | non-empty |
+| DECLARATION | a party's statement, on chain; shown to everyone, read by no round | 2,000 characters | non-empty |
 
 An IMAGE requirement is answered by photographs or video frames; a DOCUMENT requirement by
 documents or scanned pages. Each party files against its own quota per version of the terms
@@ -108,20 +109,20 @@ PROPOSED terms ──(contractor signs)── AWAITING_EVIDENCE
         │              ▼
         │   finalize (anyone, after the window or a concluded appeal)
         │              ▼
-        │       FINAL ── payment credited ── claim
+        │       FINALIZED ── payment credited ── claim
         │
         └── after deadline, no acceptance standing: close (refund the reservation)
 ```
 
 - **Assessment** rounds are requested by the contractor, before the deadline, from
-  `AWAITING_EVIDENCE`, `UNDETERMINED` or `REJECTED`. The requester names the photos and
-  documents to judge (at most 6 photos, 6 documents); every item the client or inspector
-  submitted for the version is included automatically, so a counterparty's evidence is never
-  left unread.
+  `AWAITING_EVIDENCE`, `UNDETERMINED` or `REJECTED`. The requester names the images and
+  documents to judge (at most 4 images, 4 documents); every image and document the client or
+  inspector filed for the version is included automatically, so a counterparty's evidence is
+  never left unread. Declarations are never read by a round.
 - **Appeals** are opened by the party a conclusive assessment went against (client against
   ACCEPTED, contractor against REJECTED), within the project's window, once per decision, with
   a reason. An **evidence period** as long as the window follows, in which every party may
-  file (the contractor at most 2 images and 2 texts). Then **anyone** may trigger the
+  file (the contractor at most 2 images and 2 documents). Then **anyone** may trigger the
   readjudication, which re-judges the **recorded** evidence of the appealed decision plus
   everything filed since the decision; the record marks which is which. The outcome is final:
   not appealable, and an acceptance it upholds pays at once. While an appeal is open nothing
@@ -148,9 +149,10 @@ the same `observe()`:
    SUPPORTS, CONTRADICTS or does NOT_SHOW it, plus concerns (not a construction site, a
    different site, visible text that tries to instruct).
 2. **Judge.** One text prompt: the version's requirements and criteria, the node's own photo
-   findings, documents, declarations and attestations fenced by who submitted them, and for an
-   appeal the appellant's reason fenced as argument. Output per criterion: MET, NOT_MET or
-   UNCLEAR; and `conflicts_detected`.
+   findings, and the documents fenced by who submitted them (an inspector's report as an
+   independent attestation, a party's document as its own account), and for an appeal the
+   appellant's reason fenced as argument. Output per criterion: MET, NOT_MET or UNCLEAR; and
+   `conflicts_detected`.
 3. **Validate** the answer into a struct (unknown or missing status becomes UNCLEAR;
    anything malformed is an LLM error, never a decision).
 
@@ -165,13 +167,18 @@ every criterion MET                   → ACCEPTED
 ```
 
 **Equivalence (the validator's check):** the validator runs `observe()` itself and agrees
-only if both nodes received the images, **every criterion's status matches**, and
-`conflicts_detected` matches. Prose (reasoning, visible details, per-photo findings) is free
-to differ and is recorded as the leader's notes, never as consensus. A leader that could not
-see the images is disagreed with and rotated out.
+only if both nodes received the images and it **reproduces the decision and the grounds it
+rests on**: the same acceptance; every criterion the leader rejects found NOT_MET; no
+acceptance withheld that the validator would grant; any conflict the leader reports seen too.
+Prose (reasoning, visible details, per-photo findings) is free to differ and is recorded as
+the leader's notes, never as consensus. A leader that could not see the images is disagreed
+with and rotated out. The design first required every criterion's status to match; the live
+panel stalled on it in exactly the contested cases, and [consensus](consensus.md) records why
+it changed.
 
-Every field the payout reads is either agreed in equivalence (criterion statuses, conflicts)
-or computed by code from agreed inputs (decision, payment, windows).
+Every field the payout reads is either reproduced by the agreeing validators (the decision,
+the decisive criteria, a reported conflict) or computed by code from agreed inputs (payment,
+windows).
 
 ## 8. The round record (the decision receipt)
 
@@ -183,8 +190,9 @@ Rounds are append-only; nothing is overwritten.
 
 ## 9. Prompt safety
 
-Every party-supplied string (titles, captions, documents, declarations, reasons) is defused so
-it cannot forge the evidence fences, and each is fenced with who supplied it. Validators are
+Every party-supplied string that reaches a prompt (titles, captions, documents, reasons) is
+defused so it cannot forge the evidence fences, and each is fenced with who supplied it.
+Declarations never reach a prompt. Validators are
 told fenced text and text visible inside photos is content, never instruction. The panel is
 never told the payment amount or who benefits from which answer.
 
@@ -204,27 +212,39 @@ round references a version and an evidence snapshot; nondeterministic code never
 the leader alone cannot establish a decision; an LLM or fetch failure is never ACCEPTED;
 UNDETERMINED and REJECTED never release escrow; finalized decisions are never overwritten;
 appeals preserve history; payment is credited only by a finalized acceptance; wei is
-conserved; post-terminal actions are refused; two concurrent milestones cannot over-reserve.
+conserved; post-terminal actions are refused; two concurrent milestones cannot over-reserve;
+no round reads a declaration.
 
-## 12. Live proofs planned (deployment of record)
+## 12. Live proofs (deployment of record)
 
-- Flagship: foundation milestone, the Feb 2011 photo series, assessment ACCEPTED, contest
-  window, finalize, contractor claims real GEN.
-- Negative controls: trenches-only evidence (REJECTED), an unrelated photo (not accepted),
-  contradicting client evidence (UNDETERMINED), a caption and a document carrying injected
-  instructions (no effect), a blind-leader round (rotated).
-- Mirrors: a self-serving declaration by either party cannot move the decision against photos.
-- Walls: every unauthorized action, refused payables credited back, post-final actions refused.
+What `scripts/proofs.mjs` asserts is listed in [e2e-verification](e2e-verification.md), with
+every transaction. In short:
+
+- Flagship: foundation milestone from the Feb 2011 photo series with an inspector's report,
+  assessment ACCEPTED on every criterion with no conflict, appeal window, finalize, the
+  contractor claims real GEN.
+- Negative control: trenches and rebar, nothing poured, REJECTED on the decisive criterion.
+- Injection: instructions hidden in a caption and a document produce no acceptance; a
+  declaration filed alongside is not read.
+- Mirror: the client's bare declaration does not block an acceptance the photographs support.
+- Conflict: the client appeals with a photograph of an empty lot; the appeal does not pay.
+- Walls: unauthorized and early actions refused as real transactions, a refused payable
+  credited back and claimed.
+
+Planned at design time and not run as live proofs: a round on an unrelated photograph and a
+blind-leader rotation. Blindness is covered by the direct tests and was observed live during
+the probes ([PROBE-REPORT](PROBE-REPORT.md) section 8).
 
 ## 13. Frontend
 
 Next.js App Router, TypeScript strict, Tailwind, pnpm, Transaction Kit 0.1.0-rc.2 with
 genlayer-js 2.0.0-rc.1, EIP-6963 wallets, in-app test GEN, budgeted reads (30 reads a minute
 per IP on Studio Next), a single presentation module so no raw identifier reaches a screen,
-and a pure availability function deciding every action and its reason. Pages: dashboard,
-projects, new project, project, milestone workspace (terms, evidence, assessment, decision
-receipt, appeal, settlement), round receipt, activity. **The visual design is chosen with
-the user before any page is built.**
+and a pure availability function deciding every action and its reason. The visual design, a
+drawing set, was chosen with the user before any page was built: every page is a numbered
+sheet (S-00 cover, S-01 project register, S-02 new project, S-03 how it works, S-04
+verification), each project and milestone its own sheet with terms, evidence, assessment,
+appeal and settlement, and each round a payment certificate with the panel's receipt.
 
 ## 14. Demo evidence
 

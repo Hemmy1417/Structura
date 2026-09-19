@@ -1,0 +1,62 @@
+# Two required jobs on every push and pull request: the contract (GenVM
+# linter and validation, then the direct-mode suite, which includes tests on
+# the official SDK runner the contract pins) and the web app (lint, types,
+# unit tests, production build). The live proofs on Studio Next take about an
+# hour of real appeal windows and run by hand: node scripts/proofs.mjs 0x...
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: contract - genvm-lint check + direct tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # The GenVM bundle the linter and the SDK runner tests load is large;
+      # keep it between runs, keyed on the tool versions and the contract's
+      # pinned runner.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/genvm-linter
+            ~/.cache/gltest-direct
+          key: genvm-${{ hashFiles('requirements.txt', 'contracts/structura.py') }}
+          restore-keys: genvm-
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: genvm-lint check contracts/structura.py --json
+      - run: python -m pytest tests/direct -q
+
+  web:
+    name: web - lint, types, tests, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      # One address everywhere: the app, the proof log and the docs name the
+      # same deployment of record.
+      - run: node scripts/check-address.mjs

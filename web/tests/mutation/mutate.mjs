@@ -1,6 +1,7 @@
-// Mutation sweep for the web rules (pnpm mutate): break one rule at a time in web/lib, run the tests that
-// cover it, require a failure. Every file is restored from memory in a
-// finally block, and the run ends by checking git sees no change.
+// Mutation sweep for the web rules (pnpm mutate): break one rule at a time
+// in web/lib, run the tests that cover it, require a failure. Every file is
+// restored from memory in a finally block, and the run ends by comparing
+// each file with its contents before the sweep began.
 import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -30,6 +31,10 @@ const M = [
   ["kit", "policy check always claimed", "verification: capsMatch ?", "verification: true ?"],
   ["kit", "claim priced by the kit", "if (!isTransfer(tx) || quote.gasless) return quote;", "return quote;"],
   ["kit", "user value dropped from the total", "total: sim.feeValue + quote.userValue,", "total: sim.feeValue,"],
+  ["read", "budget overrun by one", "if (starts.length >= READ_BUDGET) {", "if (starts.length > READ_BUDGET) {"],
+  ["read", "no gap between starts", "(starts[starts.length - 1] ?? -Infinity) + MIN_GAP_MS", "(starts[starts.length - 1] ?? -Infinity)"],
+  ["read", "old starts never forgotten", "while (starts.length && (starts[0] ?? 0) <= now - READ_WINDOW_MS) starts.shift();", ""],
+  ["read", "tag byte left in a refusal", "while (start < decoded.length && decoded.charCodeAt(start) < 0x20) start++;", ""],
   ["receipt", "hyphens read as spaces", "c.charCodeAt(0) < 0x20", "c.charCodeAt(0) < 0x2e"],
   ["receipt", "reasoning cut at a second marker", `after(body.slice(cut), " why: ")`, `(body.slice(cut).split(" why: ")[1] ?? "")`],
   ["receipt", "leader row taken from a validator", `rows.find((r) => r.mode !== "validator")`, `rows.find((r) => r.mode === "validator")`],
@@ -43,8 +48,8 @@ const M = [
   ["present", "hours in local time", "String(d.getUTCHours())", "String(d.getHours())"],
 ];
 
-const files = { acts: "lib/acts.ts", kit: "lib/kit.ts", receipt: "lib/receipt.ts", images: "lib/images.ts", present: "lib/present.ts" };
-const tests = { acts: "tests/acts.test.ts", kit: "tests/kit.test.ts", receipt: "tests/receipt.test.ts", images: "tests/images.test.ts", present: "tests/present.test.ts" };
+const files = { acts: "lib/acts.ts", kit: "lib/kit.ts", read: "lib/read.ts", receipt: "lib/receipt.ts", images: "lib/images.ts", present: "lib/present.ts" };
+const tests = { acts: "tests/acts.test.ts", kit: "tests/kit.test.ts", read: "tests/read.test.ts", receipt: "tests/receipt.test.ts", images: "tests/images.test.ts", present: "tests/present.test.ts" };
 
 function run(testFile) {
   const r = spawnSync(NODE, [VITEST, "run", testFile], { cwd: WEB, encoding: "utf8" });
@@ -52,6 +57,7 @@ function run(testFile) {
   return { ok: r.status === 0, tail: tail.replace(/\s+/g, " ").trim() };
 }
 
+const snapshot = Object.fromEntries(Object.values(files).map((f) => [f, readFileSync(join(WEB, f), "utf8")]));
 let killed = 0;
 const survivors = [];
 for (const [area, name, from, to] of M) {
@@ -74,7 +80,7 @@ for (const [area, name, from, to] of M) {
 }
 const control = run("tests");
 console.log(`control, the code as written: ${control.ok ? "passes" : "FAILS"} (${control.tail})`);
-const diff = spawnSync("git", ["diff", "--quiet", "--", "lib"], { cwd: WEB });
-console.log(`working tree after restore: ${diff.status === 0 ? "clean" : "CHANGED"}`);
+const changed = Object.entries(snapshot).filter(([f, text]) => readFileSync(join(WEB, f), "utf8") !== text).map(([f]) => f);
+console.log(`files after restore: ${changed.length ? `CHANGED ${changed.join(", ")}` : "as they were"}`);
 console.log(`${killed}/${M.length} mutants killed${survivors.length ? `; survivors: ${survivors.join(", ")}` : ""}`);
 console.log("exit");

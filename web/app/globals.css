@@ -147,6 +147,15 @@ a {
   border-left: 0;
 }
 
+/* A grid item may shrink below its content's width, so a wide schedule
+   scrolls inside its own wrapper instead of widening the sheet on a phone.
+   In the base layer, so an explicit min-width utility still wins. */
+@layer base {
+  .grid > * {
+    min-width: 0;
+  }
+}
+
 /* ── revision cloud: amber scallops around what needs attention ── */
 
 .cloud {

@@ -102,8 +102,8 @@ export default function Cover() {
               <p>
                 On GenLayer, the leading validator and every other validator run the same reading of the same stored
                 bytes. A decision is recorded only when a majority reproduces it: the same acceptance, or the same
-                criteria found unmet. A validator that cannot see the images is voted down, and a leader cannot
-                withhold an acceptance the others would grant.
+                criteria found unmet. A node that cannot see the images cannot vote for any decision, a leader
+                that cannot see them is replaced, and a leader cannot withhold an acceptance the others would grant.
               </p>
               <p>
                 Code decides everything else: who may act, when, and what moves. Money moves only through the
@@ -111,7 +111,7 @@ export default function Cover() {
               </p>
             </div>
             <div className="panel p-4 text-sm">
-              <p className="label">Decided in code, from the agreed ratings</p>
+              <p className="label">Decided in code, from the ratings the majority reproduced</p>
               <table className="schedule mt-2">
                 <tbody>
                   <tr><td>Evidence contradicts itself</td><td><Mark tone="open">Undetermined</Mark></td></tr>

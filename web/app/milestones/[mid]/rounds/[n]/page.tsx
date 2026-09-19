@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import { Copyable, Empty, Gen, Loading, Mark, ReadFailure, Stamp, toneOfDecision, When } from "@/components/bits";
+import { Copyable, Empty, Gen, Loading, Mark, ReadFailure, Stamp, toneOfDecision, useNow, When } from "@/components/bits";
 import { PanelView } from "@/components/PanelView";
 import { Section, Sheet } from "@/components/Sheet";
 import { addressUrl } from "@/lib/chain";
@@ -36,16 +36,22 @@ function DigestCheck({ row }: { row: SnapshotRow }) {
   return <span className="label">could not read</span>;
 }
 
-function payLine(r: RoundView, m: MilestoneView, latest: boolean): string {
+/** What this round's decision means for the payment now: the milestone's state and the clock decide. */
+function payLine(r: RoundView, m: MilestoneView, latest: boolean, nowMs: number): string {
   const pay = present.gen(m.versions[r.version - 1]?.payment_wei ?? "0");
   if (!latest) return `Superseded by a later round; this certificate authorises nothing on its own.`;
   if (m.state === "FINALIZED") return `${pay} released to the contractor on ${present.day(m.finalized_at)}.`;
-  if (r.decision === "ACCEPTED") {
-    return r.appealable && r.window_ends
-      ? `${pay} payable once the client's appeal window closes, ${present.moment(r.window_ends)}, unless appealed.`
-      : `${pay} payable now: an appeal upheld the acceptance.`;
+  if (m.state === "APPEALED") return `Under appeal: nothing is payable until the appeal is decided.`;
+  if (m.standing?.kind === "APPEAL_LAPSED") {
+    return `Not payable: the appeal against this decision was never decided, so the milestone stands undetermined.`;
   }
   if (m.state === "CLOSED") return `Nothing paid; the milestone closed and ${pay} returned to the client's escrow.`;
+  if (r.decision === "ACCEPTED") {
+    if (!r.appealable || !r.window_ends) return `${pay} payable now: an appeal upheld the acceptance. Anyone may finalize it.`;
+    return nowMs <= Date.parse(r.window_ends)
+      ? `${pay} payable once the client's appeal window closes, ${present.moment(r.window_ends)}, unless appealed.`
+      : `${pay} payable: the client's appeal window closed ${present.moment(r.window_ends)} with no appeal. Anyone may finalize it.`;
+  }
   return r.decision === "REJECTED"
     ? `Not payable: a criterion was found not met.`
     : `Not payable: the evidence did not establish every criterion.`;
@@ -54,6 +60,7 @@ function payLine(r: RoundView, m: MilestoneView, latest: boolean): string {
 export default function Certificate() {
   const { mid, n } = useParams<{ mid: string; n: string }>();
   const num = Number(n);
+  const nowMs = useNow();
   const read = useChain(`certificate.${mid}.${num}`, async () => {
     const [round, milestone] = await Promise.all([getRound(mid, num), getMilestone(mid)]);
     const project = milestone ? await getProject(milestone.project_id) : null;
@@ -115,7 +122,7 @@ export default function Certificate() {
             </div>
             <div className="border-t border-ink pt-3">
               <p className="label">Settlement</p>
-              <p className="mt-1">{payLine(r, m, latest)}</p>
+              <p className="mt-1">{payLine(r, m, latest, nowMs)}</p>
             </div>
           </div>
           <div className="grid content-start justify-items-start gap-2 sm:justify-items-end">

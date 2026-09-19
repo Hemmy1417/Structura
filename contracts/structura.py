@@ -23,6 +23,11 @@ A validator agrees with the leader only when it reproduces the decision and
 the grounds it rests on: the same acceptance, or every rejected criterion
 rejected again, and never an undetermined result where it would accept.
 
+A declaration is a party's statement for the record: stored, hashed and
+shown to every party, never read by a round, because by the contract's own
+rule a party's word can neither establish nor contest a criterion. Argument
+belongs in an appeal's reason, which the panel reads as argument.
+
 Only a finalized acceptance pays. The party a decision went against may
 appeal it once, inside the project's window: the appeal opens an evidence
 period in which every party may answer, then a readjudication re-judges the
@@ -883,9 +888,9 @@ class Structura(gl.contract.Contract):
             _refuse(f"the {role.lower()} has filed the {QUOTAS[role][bucket]} "
                     f"{'images' if bucket == 'IMAGE' else 'documents and declarations'} "
                     "one version of the terms allows")
-        if state == "APPEALED" and role == "CONTRACTOR":
+        if state == "APPEALED" and role == "CONTRACTOR" and kind != "DECLARATION":
             mark = int(m["standing"]["item_mark"])
-            added = [e for e in mine if _num(e) > mark]
+            added = [e for e in mine if _num(e) > mark and self._item(e)["kind"] != "DECLARATION"]
             if len(added) >= APPEAL_ADDITIONS[bucket]:
                 _refuse(f"an appeal reads at most {APPEAL_ADDITIONS[bucket]} new "
                         f"{'images' if bucket == 'IMAGE' else 'documents'} from the contractor")
@@ -968,8 +973,10 @@ class Structura(gl.contract.Contract):
 
     @gl.public.write
     def submit_declaration(self, mid: str, text: str) -> str:
-        """A party's statement about its own case. The panel reads it as a
-        claim, never as proof."""
+        """A party's statement for the record: stored, hashed and shown to
+        every party. No round reads it: a party's own word can neither
+        establish nor contest a criterion, so it is kept out of the panel's
+        reach by construction rather than by instruction."""
         m, p, role, v, ids = self._evidence_gate(mid, "", "DECLARATION", "")
         body = str(text or "")
         if not body.strip():
@@ -1153,8 +1160,8 @@ class Structura(gl.contract.Contract):
                 + (f"; concerns: {_defuse('; '.join(f['concerns']))}" if f["concerns"] else ""))
         text_blocks = []
         for it, body in ctx["texts"]:
-            label = ("DECLARATION (a party's own claim, never proof by itself)"
-                     if it["kind"] == "DECLARATION" else "DOCUMENT")
+            label = ("DOCUMENT (the inspector's, an independent attestation)" if it["role"] == "INSPECTOR"
+                     else f"DOCUMENT (the {it['role'].lower()}'s own account)")
             ref = f"; reference: {_defuse(it['reference'])}" if it.get("reference") else ""
             text_blocks.append(
                 f"<<<BEGIN ITEM {it['item_id']} {label}, submitted by the "
@@ -1176,21 +1183,22 @@ class Structura(gl.contract.Contract):
             + appeal_block
             + "Your own inspection of the images:\n"
             + ("\n".join(image_lines) if image_lines else "- no images") + "\n"
-            + "Documents and declarations:\n"
+            + "Documents:\n"
             + ("\n".join(text_blocks) if text_blocks else "- none") + "\n"
             "Rules. MET: the evidence clearly shows the criterion satisfied. NOT_MET: "
             "the evidence clearly shows it not satisfied, because the required work is "
             "visibly missing, unfinished or different from what the criterion or the "
             "specification requires. UNCLEAR: the evidence shows neither, because the "
-            "relevant work is not visible or the evidence is too poor. A caption, a "
-            "declaration or any statement by a party is a claim: by itself it can "
-            "neither establish a criterion, nor make one unclear, nor create a "
-            "conflict, whichever party makes it. conflicts_detected is true when items "
-            "that show something contradict each other in a way that matters for a "
-            "criterion, whoever filed them: for example images of different places "
-            "offered as the same site, or an inspection report whose findings "
-            "contradict the images. When evidence conflicts about a criterion, that "
-            "criterion is UNCLEAR.\n"
+            "relevant work is not visible or the evidence is too poor. A caption, or a "
+            "document written by the client or the contractor, is that party's own "
+            "account: by itself it can neither establish a criterion, nor make one "
+            "unclear, nor create a conflict, whichever party wrote it. Images, and the "
+            "inspector's reports, show something. conflicts_detected is true when "
+            "images or an inspector's report contradict each other in a way that "
+            "matters for a criterion, whoever filed them: for example images of "
+            "different places offered as the same site, or an inspector's report whose "
+            "findings contradict the images. When such evidence conflicts about a "
+            "criterion, that criterion is UNCLEAR.\n"
             "Write in English. Answer STRICT JSON, reasoning first: {\"reasoning\": \"<3-6 sentences>\", "
             "\"criteria\": [{\"id\": \"C1\", \"status\": \"MET|NOT_MET|UNCLEAR\", "
             "\"basis\": [\"<item ids>\"]}], \"conflicts_detected\": true|false, "
@@ -1320,8 +1328,9 @@ class Structura(gl.contract.Contract):
 
     @gl.public.write
     def request_assessment(self, mid: str, item_ids_json: str) -> str:
-        """The contractor asks validators to judge the items they name plus
-        every item the client and the inspector filed for these terms."""
+        """The contractor asks validators to judge the images and documents
+        they name plus every image and document the client and the inspector
+        filed for these terms."""
         m = self._milestone(mid)
         p = self._project(m["project_id"])
         if self._sender() != p["contractor"]:
@@ -1349,8 +1358,11 @@ class Structura(gl.contract.Contract):
             e = str(e)
             if e not in own:
                 _refuse(f"item {e} does not belong to the current terms")
-            if self._item(e)["role"] != "CONTRACTOR":
+            it = self._item(e)
+            if it["role"] != "CONTRACTOR":
                 _refuse(f"item {e} is not the contractor's; it is included automatically")
+            if it["kind"] == "DECLARATION":
+                _refuse(f"item {e} is a declaration: a statement for the record that no round reads")
             if e not in eids:
                 eids.append(e)
         images, texts = self._texts_images(eids)
@@ -1359,11 +1371,12 @@ class Structura(gl.contract.Contract):
         if len(texts) > MAX_NAMED["TEXT"]:
             _refuse(f"an assessment reads at most {MAX_NAMED['TEXT']} of the contractor's documents")
         for e in own:
-            if self._item(e)["role"] != "CONTRACTOR" and e not in eids:
+            it = self._item(e)
+            if it["role"] != "CONTRACTOR" and it["kind"] != "DECLARATION" and e not in eids:
                 eids.append(e)
         images, texts = self._texts_images(eids)
-        if not images and not any(self._item(e)["kind"] == "DOCUMENT" for e in texts):
-            _refuse("an assessment needs at least one image or document; a declaration alone proves nothing")
+        if not eids:
+            _refuse("an assessment needs at least one image or document")
         gap = self._coverage_gap(version, eids)
         if gap:
             _refuse(gap)
@@ -1401,7 +1414,8 @@ class Structura(gl.contract.Contract):
         if adverse_role == "CONTRACTOR":
             mark = int(standing["item_mark"])
             added = [e for e in self._version_items(mid, int(m["current_version"]))
-                     if _num(e) > mark and self._item(e)["role"] == "CONTRACTOR"]
+                     if _num(e) > mark and self._item(e)["role"] == "CONTRACTOR"
+                     and self._item(e)["kind"] != "DECLARATION"]
             images, texts = self._texts_images(added)
             if len(images) > APPEAL_ADDITIONS["IMAGE"] or len(texts) > APPEAL_ADDITIONS["TEXT"]:
                 _refuse(f"since the decision the contractor filed more than an appeal reads "
@@ -1435,7 +1449,8 @@ class Structura(gl.contract.Contract):
         v = int(m["current_version"])
         recorded = [row["item_id"] for row in prior["evidence"]]
         mark = int(m["standing"]["item_mark"])
-        new_ids = [e for e in self._version_items(mid, v) if e not in recorded and _num(e) > mark]
+        new_ids = [e for e in self._version_items(mid, v) if e not in recorded and _num(e) > mark
+                   and self._item(e)["kind"] != "DECLARATION"]
         eids = recorded + new_ids
         version = m["versions"][int(prior["version"]) - 1]
         outcome = self._run_round(version, eids, new_ids, "APPEAL", appeal["reason"], reviewed)

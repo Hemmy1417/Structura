@@ -371,7 +371,8 @@ def test_counterparty_evidence_is_always_read(module, c):
     looks = " ".join(p["prompt"] for p in prompts("look", "leader"))
     assert f"item {client_img}, a photograph submitted by the client" in looks
     judge_prompt = prompts("judge", "leader")[0]["prompt"]
-    assert f"<<<BEGIN ITEM {inspector_doc} DOCUMENT, submitted by the inspector" in judge_prompt
+    assert (f"<<<BEGIN ITEM {inspector_doc} DOCUMENT (the inspector's, an independent attestation), "
+            "submitted by the inspector") in judge_prompt
 
 
 def test_the_contractor_chooses_which_of_their_own_items_are_read(module, c):
@@ -431,8 +432,9 @@ def test_the_preflight_refuses_before_any_validator_works(module, c, case):
     elif case == "declaration-only":
         pid2, mid2 = active_milestone(module, c, evidence_requirements=[])
         target = mid2
-        named = json.dumps([declaration(module, c, mid2)])
-        words = "a declaration alone proves nothing"
+        decl = declaration(module, c, mid2)
+        named = json.dumps([decl])
+        words = f"item {decl} is a declaration: a statement for the record that no round reads"
     elif case == "coverage":
         named = json.dumps(items[:1])
         words = r"evidence requirement R1 \(Photographs of the poured ground beams\) needs 2 item\(s\) from the contractor"
@@ -509,17 +511,52 @@ def test_the_panel_is_never_told_the_payment_or_who_benefits(module, c):
 
 def test_claims_are_shown_as_claims(module, c):
     pid, mid, items = ready(module, c)
-    decl = declaration(module, c, mid, who=CLIENT, text="Nothing was poured.")
+    note = document(module, c, mid, who=CLIENT, title="Client's note", text="Nothing was poured.")
     assess(module, c, mid, items)
     look = prompts("look", "leader")[0]["prompt"]
     assert 'caption: "beam 0"' in look and 'claimed capture date: "2011-02-18"' in look
     assert "are the submitter's claims, not facts" in look
     assert "counts against the case it was offered for" in look
     judge_prompt = prompts("judge", "leader")[0]["prompt"]
-    assert (f"<<<BEGIN ITEM {decl} DECLARATION (a party's own claim, never proof by itself), "
-            "submitted by the client") in judge_prompt
+    assert (f"<<<BEGIN ITEM {note} DOCUMENT (the client's own account), submitted by the client"
+            in judge_prompt)
     assert ("by itself it can neither establish a criterion, nor make one unclear, nor create a "
             "conflict") in judge_prompt
+    assert "Images, and the inspector's reports, show something." in judge_prompt
+
+
+def test_declarations_are_recorded_but_no_round_reads_them(module, c):
+    """A party's own word can neither establish nor contest a criterion, so
+    it is kept out of the panel's reach by construction. Found live: two
+    validators treated a client's bare declaration as a conflict and
+    withheld a well-evidenced acceptance, despite the prompt."""
+    pid, mid, items = ready(module, c, inspector=INSPECTOR)
+    theirs = declaration(module, c, mid, who=CLIENT, text="These photographs are fake.")
+    mine = declaration(module, c, mid, who=CONTRACTOR, text="All poured on 18 Feb.")
+    also = declaration(module, c, mid, who=INSPECTOR, text="I saw it.")
+    assess(module, c, mid, items)
+    r = json.loads(c.get_round(mid, 1))
+    read = [row["item_id"] for row in r["evidence"]]
+    assert read == items and not {theirs, mine, also} & set(read)
+    for p in prompts():
+        for text in ("These photographs are fake.", "All poured on 18 Feb.", "I saw it."):
+            assert text not in p["prompt"]
+    assert json.loads(c.get_item(theirs))["text"] == "These photographs are fake."   # still on the record
+
+
+def test_an_appeal_never_reads_a_declaration(module, c):
+    pid, mid, items = ready(module, c)
+    assess(module, c, mid, items)
+    set_now("2026-09-20T09:30:00Z")
+    as_(module, CLIENT)
+    c.open_appeal(mid, "different site")
+    shout = declaration(module, c, mid, who=CLIENT, text="Nothing here is ours.")
+    photo = image(module, c, mid, who=CLIENT, req="", caption="the plot today")
+    set_now("2026-09-20T10:30:01Z")
+    llm(look=look_all(), judge=judge_all("MET"))
+    as_(module, STRANGER)
+    out = json.loads(c.decide_appeal(mid))
+    assert out["new_items"] == [photo] and shout not in out["new_items"]
 
 
 def test_the_terms_reach_the_panel_as_terms(module, c):

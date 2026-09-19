@@ -187,7 +187,7 @@ class Walk:
         mine = [json.loads(self.c.items[e]) for e in own]
         mine = [it for it in mine if it["role"] == "CONTRACTOR"]
         images = [it["item_id"] for it in mine if it["kind"] == "IMAGE"][:4]
-        texts = [it["item_id"] for it in mine if it["kind"] != "IMAGE"][:4]
+        texts = [it["item_id"] for it in mine if it["kind"] == "DOCUMENT"][:4]
         named = images + texts
         if self.rng.random() < 0.1:
             named = own                                # may include others' items: refused

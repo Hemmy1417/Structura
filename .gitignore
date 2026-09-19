@@ -30,3 +30,6 @@ artifacts/
 
 # probe downloads (the committed demo images live in fixtures/)
 probes/img/
+
+# local tool settings
+.claude/

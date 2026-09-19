@@ -43,20 +43,42 @@ the criteria, the image bytes and the texts. Nondeterministic code only reads th
 
 ## The validator's rule
 
-The validator runs `_observe()` itself and agrees with the leader only when all of these hold:
+The validator runs `_observe()` itself. It agrees with the leader only when the leader's
+result is a normal return, both nodes received the images, and the validator **reproduces the
+decision and the grounds it rests on** (`_unconfirmed`):
 
-- the leader's result is a normal return, not an error;
-- the leader received the images, and so did this validator;
-- **every criterion's status is identical**;
-- the conflict flag is identical.
+| the leader's decision | the validator agrees when |
+|---|---|
+| ACCEPTED | it reaches the same acceptance itself: every criterion MET, no conflict |
+| REJECTED | every criterion the leader rejects is NOT_MET for it too, and it sees no conflict |
+| UNDETERMINED | it would not accept: a leader may assert less than a validator, never withhold a payment it would grant |
 
-Anything else is a disagreement, printed with the reason (`[DISAGREE] criteria C2 …`) so a
-receipt shows why a round failed. A blind leader is therefore rotated out, and a leader that
-reports a status no majority reproduces never reaches the record.
+and, in every case, a conflict the leader reports is one the validator also sees, and the leader
+rates every criterion. Anything else is a disagreement, printed with the reason
+(`[DISAGREE] criterion C1: the leader rejects it, this node finds it UNCLEAR …`) and the
+validator's own reasoning, so a receipt shows why a round failed. A blind leader is rotated
+out, and no payment can rest on a reading a majority did not reproduce.
 
-Prose is free to differ: reasoning, visible details, per-image readings and the items cited
-as the basis. The leader's prose is stored as **the leader's notes**, labelled as such, and no
-later round or payment reads it.
+Readings that decide nothing may differ: a secondary criterion in a rejection, the prose, the
+visible details, the items cited as the basis. The record keeps the leader's ratings and marks
+which criteria were **decisive** (all of them for an acceptance, the rejected ones for a
+rejection, none for an undetermined result); only those were reproduced by the majority. The
+leader's prose is stored as **the leader's notes**, labelled as such, and no later round or
+payment reads it.
+
+### Why not require every rating to match
+
+That was the first design, and the live rounds on Studio Next refused it. With validators from
+different model families (gpt-5.4, Claude Sonnet, Gemini, Grok, DeepSeek, Mistral, gpt-oss),
+exact agreement on three ratings per criterion failed precisely in the contested cases that
+matter most. On a clearly unfinished foundation (open trenches, no concrete) every node that
+could see the images rated the decisive criterion NOT_MET, yet the panel split on the layout
+and same-site criteria (MET against UNCLEAR) and no decision was ever recorded across four
+leader rotations. A client's photograph of an empty lot split the panel the same way. Both
+rounds stalled rather than recording the honest outcome. The rule above binds what has a
+consequence: the payment, the rejection's grounds, the refusal to withhold an acceptance. With
+it, the same cases record REJECTED and UNDETERMINED on the first leader (see
+[e2e-verification](e2e-verification.md)).
 
 ## The decision is derived in code
 
@@ -79,14 +101,19 @@ Doubt and conflict never pay. A clearly failed criterion rejects even when other
 
 | field | how it is bound |
 |---|---|
-| every criterion's status | agreed in equivalence |
-| the conflict flag | agreed in equivalence |
+| the decision | reproduced by every agreeing validator, as the table above describes |
+| the decisive criteria's statuses | reproduced by every agreeing validator |
+| other criteria's statuses | the leader's ratings, never able to turn a decision |
+| the conflict flag | a reported conflict is reproduced; a conflict any agreeing validator sees blocks a conclusive decision |
 | images received | required of the leader and of each agreeing validator |
 | decision, evidence quality, appealability, window | computed in code from agreed fields and the transaction datetime |
 | evidence snapshot (ids, roles, digests) | written by the contract from its own storage before the round runs |
 | leader's notes | recorded as the leader's; read by no later round and no payment |
 
 Every field the payout reads is agreed or computed from agreed inputs.
+
+The prompts end with "Write in English": the leader's notes reach the receipt, and one live
+validator answered in Chinese before the instruction was added.
 
 ## Prompt safety
 
@@ -106,6 +133,8 @@ Every field the payout reads is agreed or computed from agreed inputs.
 
 If no leader's result gathers a majority, the transaction ends without a decision and nothing
 is recorded: the milestone keeps its previous state, and the round can be requested again (an
-assessment before the deadline; a readjudication at any time). A milestone whose rounds keep
-failing still closes at its deadline, so no failure can hold the escrow forever. See
-[e2e-verification](e2e-verification.md) for the live rounds and what each proved.
+assessment before the deadline; a readjudication at any time). No failure can hold the escrow
+forever: a milestone whose assessments keep failing closes at its deadline, and an appeal that
+no readjudication decides within three days of its evidence period lapses to UNDETERMINED,
+after which the deadline governs again. See [e2e-verification](e2e-verification.md) for the
+live rounds and what each proved.

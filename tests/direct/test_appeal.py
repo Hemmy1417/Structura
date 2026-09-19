@@ -134,7 +134,8 @@ def test_the_contractor_adds_at_most_two_images_and_two_texts_to_an_appeal(modul
     with pytest.raises(err(module), match="an appeal reads at most 2 new images from the contractor"):
         image(module, c, mid, req="", caption="answer 3")
     document(module, c, mid, title="Pour record")
-    declaration(module, c, mid, text="Poured on 18 Feb.")
+    declaration(module, c, mid, text="Poured on 18 Feb.")      # a statement: not read, not counted
+    document(module, c, mid, title="Delivery note")
     with pytest.raises(err(module), match="an appeal reads at most 2 new documents from the contractor"):
         document(module, c, mid, title="one more")
 
@@ -338,7 +339,7 @@ def test_the_fullest_appeal_fits_one_round(module, c):
     image(module, c, mid, req="", caption="answer 2")
     document(module, c, mid, title="answer doc")
     open_as(module, c, mid, CONTRACTOR)
-    declaration(module, c, mid, text="Complete.")
+    document(module, c, mid, title="second answer doc")
     for who in (CLIENT, INSPECTOR, CONTRACTOR):
         with pytest.raises(err(module), match="has filed the 3|at most 2 new images"):
             image(module, c, mid, who=who, req="", caption="no room")

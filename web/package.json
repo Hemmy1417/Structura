@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "mutate": "node tests/mutation/mutate.mjs"
+    "mutate": "node tests/mutation/mutate.mjs",
+    "test:live": "vitest run -c vitest.live.config.ts"
   },
   "dependencies": {
     "@genlayer/transaction-kit": "0.1.0-rc.2",

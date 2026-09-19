@@ -94,6 +94,26 @@ receipts and records show beyond them.
   photographs, trenches and a rebar cage; with instructions hidden in a caption and a
   document, and a declaration filed alongside, the round still recorded a rejection.
 
+## The app's write path
+
+The proof script signs with genlayer-js directly. The app signs through the GenLayer
+Transaction Kit and its own claim wrapper (`web/lib/kit.ts`), so that path was run live too:
+`pnpm test:live` (`web/tests/live/write-path.live.ts`) builds the kit exactly as the app does
+for a connected wallet, with a test key behind an EIP-1193 provider in place of a browser
+extension. On 19 Sep 2026 at 19:56 UTC the flagship's client, through the kit:
+
+| write | what the test asserts | transaction |
+|---|---|---|
+| `fund_project`, 0.5 GEN attached | finalized and successful; the project's escrow grew by exactly 0.5 GEN | [0x2d682960…](https://explorer-studio-dev.genlayer.com/tx/0x2d68296087b35129a2ee43b515b049218eb769f997a520594ecd8e2a65677a33) |
+| `withdraw_escrow`, 0.5 GEN | finalized and successful; the client's claimable balance grew by exactly 0.5 GEN | [0x633f1cf2…](https://explorer-studio-dev.genlayer.com/tx/0x633f1cf28aed8f8d90013eff1dd00078cf1a0cd014929b927912f8c688108e95) |
+| `claim`, priced by simulation | finalized and successful; the balance is zero; the wallet received more than 0.45 GEN | [0x4758b0ea…](https://explorer-studio-dev.genlayer.com/tx/0x4758b0ea4cc009621ab31b0aaea75636d45d11c4bc3fd81a484f4c6de4867cf8) |
+
+The contract's transfer to the client followed as its own transaction
+([0x9c712ed8…](https://explorer-studio-dev.genlayer.com/tx/0x9c712ed84c4b67bcebf0074c2bac12221d3dbf560cef68e79076a7990ba1724e)).
+The hashes were read from the explorer afterwards; the test asserts the outcomes. What is not
+covered this way is the browser itself: a wallet extension's popups and the sheets' buttons
+are exercised by a person with a wallet.
+
 ## Money
 
 After the run the contract reported 4 projects, 4 milestones, 13 evidence items, 5 rounds,

@@ -206,9 +206,13 @@ What the flagship's leading validator wrote, recorded as its notes:
 Every transaction, each round's panel, and what the receipts show beyond the assertions are in
 [docs/e2e-verification.md](docs/e2e-verification.md).
 
+The app's own write path ran live as well: through the same Transaction Kit and claim wrapper
+the app uses, the flagship's client funded 0.5 GEN, withdrew it and claimed it, each write
+finalized and successful (`pnpm test:live`, transactions in the verification document).
+
 **Tests:** 233 contract tests (a strict stub harness, 11 on the official GenLayer direct runner,
-and a randomized invariant walk), 60 app tests, and two mutation sweeps that break each rule
-and require a failing test: 64 of 64 in the contract, 34 of 34 in the app.
+and a randomized invariant walk), 61 app tests, and two mutation sweeps that break each rule
+and require a failing test: 64 of 64 in the contract, 35 of 35 in the app.
 
 ## Tech stack
 

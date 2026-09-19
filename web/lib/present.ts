@@ -48,6 +48,24 @@ const DECISION: Record<Decision, string> = {
 };
 export const decision = (s: string) => label(DECISION, s);
 
+/** A decision as a noun, for sentences: "contested the acceptance". */
+const DECISION_NOUN: Record<Decision, string> = {
+  ACCEPTED: "acceptance",
+  REJECTED: "rejection",
+  UNDETERMINED: "undetermined result",
+};
+export const decisionNoun = (s: string) => label(DECISION_NOUN, s).toLowerCase();
+
+/** How one leader rotation of a consensus round ended, as the network labels it. */
+const ROTATION: Record<string, string> = {
+  "Leader Rotation": "no majority for this leader, so the next one took over",
+  Accepted: "a majority agreed",
+  Undetermined: "no leader gathered a majority",
+  "Leader Timeout": "the leader timed out",
+  "Validators Timeout": "the validators timed out",
+};
+export const rotationOutcome = (s: string) => label(ROTATION, s).toLowerCase();
+
 const STATUS: Record<Status, string> = { MET: "Met", NOT_MET: "Not met", UNCLEAR: "Unclear" };
 export const status = (s: string) => label(STATUS, s);
 

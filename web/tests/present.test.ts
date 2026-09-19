@@ -71,6 +71,14 @@ describe("ids and enums never reach a screen raw", () => {
     expect(present.eventKind("APPEAL_LAPSED")).toBe("Appeal lapsed");
   });
 
+  it("names decisions as nouns and rotations by how they ended", () => {
+    expect(present.decisionNoun("ACCEPTED")).toBe("acceptance");
+    expect(present.decisionNoun("REJECTED")).toBe("rejection");
+    expect(present.rotationOutcome("Leader Rotation")).toBe("no majority for this leader, so the next one took over");
+    expect(present.rotationOutcome("Accepted")).toBe("a majority agreed");
+    expect(present.rotationOutcome("Something New")).toBe("something new");
+  });
+
   it("falls back to words for anything unknown", () => {
     expect(present.milestoneState("SOMETHING_NEW")).toBe("Something new");
     expect(present.humanize("")).toBe("");

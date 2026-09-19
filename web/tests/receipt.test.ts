@@ -72,7 +72,10 @@ describe("the panel", () => {
         {
           consensus_round: "Accepted",
           leader_result: [{ mode: "leader", node_config: { primary_model: { model: "policy:dev-gemini-3-flash" } } }],
-          validator_results: [{ mode: "validator", vote: "agree", node_config: { primary_model: { model: "some/new-model" } } }],
+          validator_results: [
+            { mode: "validator", vote: "agree", node_config: { primary_model: { model: "some/new-model" } } },
+            { mode: "validator", vote: "idle", node_config: { model: "policy:dev-deepseek" } },
+          ],
         },
       ] },
     });
@@ -83,7 +86,8 @@ describe("the panel", () => {
     expect(first!.nodes[0]).toEqual({ leader: true, model: "GPT-5.4", vote: "proposed", note: "pair failed: timeout The slab is cast and cured." });
     expect(first!.nodes[1]).toMatchObject({ leader: false, model: "Claude Sonnet 4.6", vote: "disagree" });
     expect(first!.nodes[1]!.note).toBe("The leader accepts; this node finds undetermined. Its reading: the rebar why: is hidden");
-    expect(second!.nodes.map((n) => n.model)).toEqual(["Gemini 3 Flash", "some/new-model"]);
+    expect(second!.nodes.map((n) => n.model)).toEqual(["Gemini 3 Flash", "some/new-model", "DeepSeek"]);
+    expect(second!.nodes[2]!.vote).toBe("idle");
   });
 
   it("falls back to the final receipt when the network kept no history", async () => {

@@ -131,12 +131,13 @@ export function noteOf(line: string): string {
 }
 
 function nodeOf(row: Raw, leader: boolean): PanelNode {
-  const cfg = row.node_config as { primary_model?: { model?: string } } | undefined;
+  // A node that sat a round out may carry its model at node_config.model only.
+  const cfg = row.node_config as { primary_model?: { model?: string }; model?: string } | undefined;
   const lines = linesOf(row);
   const vote = leader ? "proposed" : String(row.vote ?? "idle");
   return {
     leader,
-    model: modelName(String(cfg?.primary_model?.model ?? "")),
+    model: modelName(String(cfg?.primary_model?.model ?? cfg?.model ?? "")),
     vote,
     note: lines.map(noteOf).filter(Boolean).join(" "),
   };

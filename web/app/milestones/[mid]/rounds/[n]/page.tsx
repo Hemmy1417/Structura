@@ -116,7 +116,7 @@ export default function Certificate() {
               <div><p className="label">Requested by</p><p>{(() => {
                 const role = r.triggered_by.toLowerCase() === p.client.toLowerCase() ? "the client"
                   : r.triggered_by.toLowerCase() === p.contractor.toLowerCase() ? "the contractor"
-                    : p.inspector && r.triggered_by.toLowerCase() === p.inspector.toLowerCase() ? "the inspector" : "someone else";
+                    : p.inspector && r.triggered_by.toLowerCase() === p.inspector.toLowerCase() ? "the inspector" : "someone outside the project";
                 return present.capital(role);
               })()}</p></div>
             </div>
@@ -135,7 +135,7 @@ export default function Certificate() {
         {r.appeal ? (
           <Section n={1} title="The appeal">
             <div className="grid gap-2 text-sm">
-              <p>The {present.roleLower(r.appeal.appellant_role)} contested the {r.appeal.against.toLowerCase()} of{" "}
+              <p>The {present.roleLower(r.appeal.appellant_role)} contested the {present.decisionNoun(r.appeal.against)} of{" "}
                 <Link className="underline" href={`/milestones/${mid}/rounds/${r.appeal.reviewed_round}`}>round {r.appeal.reviewed_round}</Link>{" "}
                 on <When iso={r.appeal.opened_at} />; every party could add evidence until <When iso={r.appeal.evidence_ends} />.</p>
               <blockquote className="whitespace-pre-line border-l-2 border-line pl-3 text-ink-2">&ldquo;{r.appeal.reason}&rdquo;</blockquote>

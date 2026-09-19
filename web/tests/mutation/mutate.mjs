@@ -37,6 +37,7 @@ const M = [
   ["read", "tag byte left in a refusal", "while (start < decoded.length && decoded.charCodeAt(start) < 0x20) start++;", ""],
   ["receipt", "hyphens read as spaces", "c.charCodeAt(0) < 0x20", "c.charCodeAt(0) < 0x2e"],
   ["receipt", "reasoning cut at a second marker", `after(body.slice(cut), " why: ")`, `(body.slice(cut).split(" why: ")[1] ?? "")`],
+  ["receipt", "a sat-out node's model unnamed", "cfg?.primary_model?.model ?? cfg?.model ?? \"\"", "cfg?.primary_model?.model ?? \"\""],
   ["receipt", "leader row taken from a validator", `rows.find((r) => r.mode !== "validator")`, `rows.find((r) => r.mode === "validator")`],
   ["images", "JFIF insert drops a byte", "out.set(jpeg.subarray(2), 2 + JFIF_APP0.length);", "out.set(jpeg.subarray(3), 2 + JFIF_APP0.length);"],
   ["images", "small images enlarged", "const scale = Math.min(1, edge / Math.max(width, height));", "const scale = edge / Math.max(width, height);"],

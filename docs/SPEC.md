@@ -231,9 +231,10 @@ every transaction. In short:
 - Walls: unauthorized and early actions refused as real transactions, a refused payable
   credited back and claimed.
 
-Planned at design time and not run as live proofs: a round on an unrelated photograph and a
-blind-leader rotation. Blindness is covered by the direct tests and was observed live during
-the probes ([PROBE-REPORT](PROBE-REPORT.md) section 8).
+Planned at design time and not run as asserted live proofs: a round on an unrelated
+photograph and a blind-leader rotation. Blindness is asserted by the direct tests, and a blind
+leader was observed being replaced in the live appeal round
+([e2e-verification](e2e-verification.md), "Observed, not asserted").
 
 ## 13. Frontend
 

@@ -42,7 +42,7 @@ export function PanelView({ hash, source }: { hash: string; source: string }) {
       {panel.rotations.map((r, i) => (
         <div key={i} className="border border-line">
           <p className="label border-b border-line px-3 py-1.5">
-            Rotation {i + 1}{r.label ? `: ${present.humanize(r.label).toLowerCase()}` : ""}
+            Rotation {i + 1}{r.label ? `: ${present.rotationOutcome(r.label)}` : ""}
           </p>
           <ul className="divide-y divide-line-soft">
             {r.nodes.map((n, j) => (

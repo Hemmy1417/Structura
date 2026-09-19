@@ -91,7 +91,7 @@ def test_the_leaders_prose_never_decides(module, c):
 
 
 @pytest.mark.parametrize("split", ["C1", "C2", "C3"])
-def test_every_criterion_must_match_or_nothing_is_recorded(module, c, split):
+def test_an_acceptance_needs_every_criterion_reproduced_or_nothing_is_recorded(module, c, split):
     pid, mid, items = ready(module, c)
     theirs = {"C1": "MET", "C2": "MET", "C3": "MET"}
     theirs[split] = "NOT_MET"

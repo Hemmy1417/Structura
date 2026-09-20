@@ -177,8 +177,9 @@ MUTATIONS = [
     ("close under an open appeal",
      '        if m["state"] == "APPEALED":\n            _refuse("an open appeal is decided first")',
      '        if False:\n            _refuse("an open appeal is decided first")'),
-    ("cancel rewrites closed milestones",
-     '            if m["state"] == "CLOSED":\n                continue', "            if False:\n                continue"),
+    ("cancel rewrites settled milestones",
+     '            if m["state"] in ("CLOSED", "FINALIZED"):\n                continue',
+     "            if False:\n                continue"),
     # parties
     ("the client is their own contractor",
      "        if contractor == sender:", "        if False:"),

@@ -226,7 +226,7 @@ function appealOverflow(m: MilestoneView, config: ConfigView | null): string {
   if (!m.standing) return "";
   const mark = m.standing.item_mark;
   const added = currentItems(m).filter((it) =>
-    it.role === "CONTRACTOR" && it.kind !== "DECLARATION" && Number(it.item_id.split("-")[1]) > mark);
+    it.role === "CONTRACTOR" && Number(it.item_id.split("-")[1]) > mark);
   const images = added.filter((it) => it.kind === "IMAGE").length;
   const texts = added.length - images;
   const cap = config?.appeal_additions ?? { IMAGE: 2, TEXT: 2 };

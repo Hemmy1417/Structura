@@ -269,10 +269,10 @@ a {
 
 .input::placeholder { color: var(--color-iron); }
 
-.input:focus {
-  outline: none;
+/* Elevation is surface and hairline only, so a focused field darkens its
+   own hairline and takes the page's focus ring, never a glow. */
+.input:focus-visible {
   border-color: var(--color-blue);
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
 }
 
 textarea.input { min-height: 96px; resize: vertical; line-height: 1.47; }

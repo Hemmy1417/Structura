@@ -91,7 +91,7 @@ Doubt and conflict never pay.
 
 | State | Who moves it | If nobody acts |
 |---|---|---|
-| AWAITING_TERMS | the contractor signs | anyone closes it after the deadline |
+| AWAITING_TERMS | the contractor signs, while those terms' own deadline stands | anyone closes it once no signable version is left |
 | AWAITING_EVIDENCE | the contractor requests an assessment | anyone closes it after the deadline |
 | ACCEPTED | the client appeals, or anyone finalizes after the window | finalize is open to anyone once the window passes |
 | REJECTED, UNDETERMINED | the contractor reassesses or, from a rejection, appeals | anyone closes it after the deadline and any window |
@@ -114,8 +114,8 @@ Doubt and conflict never pay.
 | Chain ID | 61997 |
 | RPC | `https://studio-next.genlayer.com/api` |
 | Explorer | https://explorer-studio-dev.genlayer.com |
-| Deployment of record | [`0xD7639062c2Df6561572839A5ebF013E61Bab897A`](https://explorer-studio-dev.genlayer.com/address/0xD7639062c2Df6561572839A5ebF013E61Bab897A) |
-| Source | [`contracts/structura.py`](contracts/structura.py), sha256 `96091fda…7b40`, byte-identical to the deployment |
+| Deployment of record | [`0x238243bBBbD9E450107D84F141bbC61888B117f6`](https://explorer-studio-dev.genlayer.com/address/0x238243bBBbD9E450107D84F141bbC61888B117f6) |
+| Source | [`contracts/structura.py`](contracts/structura.py), sha256 `162c3615…b0dc`, byte-identical to the deployment |
 | Runner | `py-genlayer:5jycge4q8k23462jtb0b9fyey1s9qz928sz2nbrd9mg4sxqg2qng` |
 
 ### Write methods
@@ -128,9 +128,9 @@ Doubt and conflict never pay.
 | `accept_inspector_role(pid)` | the named inspector | no | required before the inspector files |
 | `cancel_project(pid)` | the client | no | only before the contractor signs; escrow credited back |
 | `withdraw_escrow(pid, amount_wei)` | the client | no | unreserved escrow only, to the client's balance |
-| `add_milestone(pid, terms_json)` | the client | no | reserves the payment from free escrow |
+| `add_milestone(pid, terms_json)` | the client | no | reserves the payment from free escrow; terms cannot require an inspector the project never named |
 | `propose_version(mid, terms_json)` | the client | no | new terms; the current ones stand until signed |
-| `accept_version(mid, version)` | the contractor | no | adjusts the reservation |
+| `accept_version(mid, version)` | the contractor | no | only while that version's deadline stands; adjusts the reservation |
 | `submit_image(mid, meta_json, data)` | the parties | no | PNG or JFIF JPEG, at most 400,000 bytes, hashed by the contract |
 | `submit_document(mid, meta_json, text)` | the parties | no | up to 6,000 characters |
 | `submit_declaration(mid, text)` | the parties | no | a statement for the record; no round reads it |
@@ -139,7 +139,7 @@ Doubt and conflict never pay.
 | `decide_appeal(mid)` | anyone | no | consensus round, after the evidence period |
 | `lapse_appeal(mid)` | anyone | no | three days after an undecided evidence period |
 | `finalize(mid)` | anyone | no | credits the payment to the contractor |
-| `close_milestone(mid)` | anyone | no | after the deadline with nothing accepted; returns the reservation |
+| `close_milestone(mid)` | anyone | no | after the deadline with nothing accepted and no signable terms left; returns the reservation |
 | `claim()` | anyone owed | no | the only method that sends value |
 
 ### Read methods
@@ -166,24 +166,23 @@ scans an unbounded collection.
 
 ## Verified end-to-end
 
-The live proofs ran on the deployment of record on 19 Sep 2026, every claim an assertion in
+The live proofs ran on the deployment of record on 20 Sep 2026, every claim an assertion in
 [`scripts/proofs.mjs`](scripts/proofs.mjs). Excerpt of the run's output (local path shortened):
 
 ```text
-[17:13:58] proofs on 0xD7639062c2Df6561572839A5ebF013E61Bab897A
-[17:20:43] flagship.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 94 s
-[17:21:24] walls.finalize_early: FINALIZED MAJORITY_AGREE leader=ERROR in 37 s
-[17:22:06] walls.stranger_assessment: FINALIZED MAJORITY_AGREE leader=ERROR in 40 s
-[17:30:50] negative.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 143 s
-[17:37:08] injection.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 91 s
-[17:42:50] mirror.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 85 s
-[17:43:35] conflict.appeal: FINALIZED MAJORITY_AGREE leader=SUCCESS in 41 s
-[17:44:59] walls.decide_early: FINALIZED MAJORITY_AGREE leader=ERROR in 37 s
-[17:45:40] flagship.finalize: FINALIZED MAJORITY_AGREE leader=SUCCESS in 37 s
-[17:46:25] flagship.claim: FINALIZED MAJORITY_AGREE leader=SUCCESS in 39 s
-[17:54:55] conflict.decide: FINALIZED MAJORITY_AGREE leader=SUCCESS in 112 s
-[17:55:39] walls.finalize_unconfirmed: FINALIZED MAJORITY_AGREE leader=ERROR in 41 s
-[17:55:40] all proofs passed; results in .data/proofs-0xD7639062c2Df6561572839A5ebF013E61Bab897A.json
+[01:20:56] proofs on 0x238243bBBbD9E450107D84F141bbC61888B117f6
+[01:26:48] flagship.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 56 s
+[01:27:28] walls.finalize_early: FINALIZED MAJORITY_AGREE leader=ERROR in 35 s
+[01:36:04] negative.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 111 s
+[01:42:03] injection.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 66 s
+[01:47:54] mirror.assess: FINALIZED MAJORITY_AGREE leader=SUCCESS in 101 s
+[01:48:35] conflict.appeal: FINALIZED MAJORITY_AGREE leader=SUCCESS in 36 s
+[01:49:58] walls.decide_early: FINALIZED MAJORITY_AGREE leader=ERROR in 36 s
+[01:50:36] flagship.finalize: FINALIZED MAJORITY_AGREE leader=SUCCESS in 35 s
+[01:51:18] flagship.claim: FINALIZED MAJORITY_AGREE leader=SUCCESS in 35 s
+[01:59:50] conflict.decide: FINALIZED MAJORITY_AGREE leader=SUCCESS in 101 s
+[02:00:35] walls.finalize_unconfirmed: FINALIZED MAJORITY_AGREE leader=ERROR in 41 s
+[02:00:36] all proofs passed; results in .data/proofs-0x238243bBBbD9E450107D84F141bbC61888B117f6.json
 ```
 
 | Case | Asserted outcome |
@@ -206,9 +205,13 @@ What the flagship's leading validator wrote, recorded as its notes:
 Every transaction, each round's panel, and what the receipts show beyond the assertions are in
 [docs/e2e-verification.md](docs/e2e-verification.md).
 
-The app's own write path ran live as well: through the same Transaction Kit and claim wrapper
-the app uses, the flagship's client funded 0.5 GEN, withdrew it and claimed it, each write
-finalized and successful (`pnpm test:live`, transactions in the verification document).
+The app's own write path ran live as well, on the same deployment: through the Transaction Kit
+and claim wrapper the app itself uses, the flagship's client funded 0.5 GEN, withdrew it and
+claimed it, each write finalized and successful (`pnpm test:live`, transactions in the
+verification document).
+
+Three of the five rounds needed a second leader: the first leader's reading was not reproduced
+by a majority, so it was replaced and nothing was recorded in between.
 
 **Tests:** 239 contract tests (a strict stub harness, 11 on the official GenLayer direct runner,
 and a randomized invariant walk), 64 app tests, and two mutation sweeps that break each rule
@@ -271,7 +274,7 @@ Verify the deployment and rerun the proofs:
 
 ```bash
 cd scripts && pnpm install
-node deploy.mjs verify 0xD7639062c2Df6561572839A5ebF013E61Bab897A
+node deploy.mjs verify 0x238243bBBbD9E450107D84F141bbC61888B117f6
 node keys.mjs && node deploy.mjs mine && node proofs.mjs 0x<address>
 ```
 
@@ -288,6 +291,11 @@ node keys.mjs && node deploy.mjs mine && node proofs.mjs 0x<address>
 - A refused payable credits the value back; value leaves only through `claim`, which zeroes the
   balance first and never waits on a clock.
 - Every non-terminal state has an exit anyone can take.
+- Terms no address could satisfy are refused when they are proposed, a version whose deadline
+  has passed is never signed into force, and a permissionless close cannot end a renegotiation
+  the contractor can still sign.
+- Every view answers or refuses in words, and a validator whose own model fails disagrees
+  rather than raising out of the vote.
 
 The full trust model and threat list: [docs/security.md](docs/security.md).
 
@@ -307,7 +315,9 @@ The full trust model and threat list: [docs/security.md](docs/security.md).
   its reason, decided by a pure function tested on both sides of every clock boundary.
 - The claim is priced by the network's fee simulation, because a transfer needs the message
   allocations it measures; every other write uses the network's live fee policy.
-- Every page is a sheet of a drawing set, and every round a payment certificate.
+- The interface follows one product-page system: white cards on a grey canvas, one blue pill
+  per page for the act a person is meant to take, accent colours only as a tinted word or an
+  outlined status, hairlines instead of shadows, and every machine value behind a disclosure.
 
 ## Demonstration images
 

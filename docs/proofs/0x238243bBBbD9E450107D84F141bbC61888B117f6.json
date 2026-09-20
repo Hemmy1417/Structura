@@ -1,0 +1,735 @@
+{
+  "address": "0x238243bBBbD9E450107D84F141bbC61888B117f6",
+  "steps": {
+    "flagship.create": {
+      "name": "flagship.create",
+      "role": "CLIENT",
+      "fn": "create_project",
+      "hash": "0xa51e4a6db02215c2891a23b63761bf750f33fbd1d5a3972e05b44ce7de0d0240",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"refused\": false, \"project_id\": \"pr-00001\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xa51e4a6db02215c2891a23b63761bf750f33fbd1d5a3972e05b44ce7de0d0240",
+      "rotations": 1
+    },
+    "flagship.milestone": {
+      "name": "flagship.milestone",
+      "role": "CLIENT",
+      "fn": "add_milestone",
+      "hash": "0xf6eaa6ecac222d56cdb061ecda6c039ceb32e55673190fd320936487e3b426da",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"milestone_id\": \"ms-00001\", \"version\": 1}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xf6eaa6ecac222d56cdb061ecda6c039ceb32e55673190fd320936487e3b426da",
+      "rotations": 1
+    },
+    "flagship.accept": {
+      "name": "flagship.accept",
+      "role": "CONTRACTOR",
+      "fn": "accept_project",
+      "hash": "0x947fcb1d1c5fd6137617a08ae36c2421813dcc6f07bbc1b97b14ba75eb2b5ea8",
+      "secs": 40,
+      "ok": true,
+      "text": "{\"project_id\": \"pr-00001\", \"state\": \"ACTIVE\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x947fcb1d1c5fd6137617a08ae36c2421813dcc6f07bbc1b97b14ba75eb2b5ea8",
+      "rotations": 1
+    },
+    "flagship.inspector": {
+      "name": "flagship.inspector",
+      "role": "INSPECTOR",
+      "fn": "accept_inspector_role",
+      "hash": "0xc5afe59699829a8a92f0472d3f202675eec4eeacd83d349b632cfe2bb4af12de",
+      "secs": 40,
+      "ok": true,
+      "text": "{\"project_id\": \"pr-00001\", \"inspector_accepted\": true}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xc5afe59699829a8a92f0472d3f202675eec4eeacd83d349b632cfe2bb4af12de",
+      "rotations": 1
+    },
+    "flagship.photo1": {
+      "name": "flagship.photo1",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0x38bb352aa6238d7afec39587af3c47f8d219bc2c109c51402076c5a834955274",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000001\", \"sha256\": \"c8aa03e721ff8bbbec799ea3d797c1a3c6b1de4adc7bca8a7e930d71b5e048b1\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x38bb352aa6238d7afec39587af3c47f8d219bc2c109c51402076c5a834955274",
+      "rotations": 1
+    },
+    "flagship.photo2": {
+      "name": "flagship.photo2",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0xba33f38d1af1879a6cb34e98175afa502ea1ba4b5b084a95885a981b0c55856a",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000002\", \"sha256\": \"82252076f53fc90699721bb4126fff70430490715c8e0af5d417c6fb2b4f43ce\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xba33f38d1af1879a6cb34e98175afa502ea1ba4b5b084a95885a981b0c55856a",
+      "rotations": 1
+    },
+    "flagship.report": {
+      "name": "flagship.report",
+      "role": "INSPECTOR",
+      "fn": "submit_document",
+      "hash": "0xc459df473185db2e8d7b5d15d88eca1c8c7ca9a277bb8824a60e59dd803bd35d",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000003\", \"sha256\": \"2045e53d78db8c17016ea3c4ab0bbd6d21f8e36030a8932774759e1e33e89f40\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xc459df473185db2e8d7b5d15d88eca1c8c7ca9a277bb8824a60e59dd803bd35d",
+      "rotations": 1
+    },
+    "flagship.assess": {
+      "name": "flagship.assess",
+      "role": "CONTRACTOR",
+      "fn": "request_assessment",
+      "hash": "0x0f567ea02064ab0c57dcac907f02d523d3674d3db08e69649be7ed799240a9b3",
+      "secs": 56,
+      "ok": true,
+      "text": "{\"round\": 1, \"decision\": \"ACCEPTED\", \"criteria\": [{\"id\": \"C1\", \"status\": \"MET\"}, {\"id\": \"C2\", \"status\": \"MET\"}, {\"id\": \"C3\", \"status\": \"MET\"}]}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x0f567ea02064ab0c57dcac907f02d523d3674d3db08e69649be7ed799240a9b3",
+      "rotations": 1,
+      "nodes": [
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": null,
+          "model": "policy:dev-gemini"
+        },
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": "agree",
+          "model": "policy:dev-gemini"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "agree",
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-grok"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "agree",
+          "model": "openai/gpt-5.4"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "policy:dev-mistral"
+        }
+      ]
+    },
+    "walls.finalize_early": {
+      "name": "walls.finalize_early",
+      "role": "STRANGER",
+      "fn": "finalize",
+      "hash": "0x3187fdb208040a6864eb116ab17d2e916ae8d1166adc29b5502deae3b110d0cd",
+      "secs": 35,
+      "ok": false,
+      "text": "[EXPECTED] the appeal window is still open",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x3187fdb208040a6864eb116ab17d2e916ae8d1166adc29b5502deae3b110d0cd",
+      "rotations": 1
+    },
+    "walls.stranger_assessment": {
+      "name": "walls.stranger_assessment",
+      "role": "STRANGER",
+      "fn": "request_assessment",
+      "hash": "0xc38591063dc0e51335ae07bea4486a34955a0569c3581b937217b08012bee350",
+      "secs": 35,
+      "ok": false,
+      "text": "[EXPECTED] only the contractor requests an assessment",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xc38591063dc0e51335ae07bea4486a34955a0569c3581b937217b08012bee350",
+      "rotations": 1
+    },
+    "walls.contractor_appeals_own_acceptance": {
+      "name": "walls.contractor_appeals_own_acceptance",
+      "role": "CONTRACTOR",
+      "fn": "open_appeal",
+      "hash": "0xb171b16a33e05568c8098dc1ea5994d51a785670e258412fc9c6979b24d1cd83",
+      "secs": 34,
+      "ok": false,
+      "text": "[EXPECTED] only the party the decision went against may appeal it",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xb171b16a33e05568c8098dc1ea5994d51a785670e258412fc9c6979b24d1cd83",
+      "rotations": 1
+    },
+    "walls.client_files_without_appeal": {
+      "name": "walls.client_files_without_appeal",
+      "role": "CLIENT",
+      "fn": "submit_declaration",
+      "hash": "0xeedca2f5e207c97deadb72c3e69306c267c54d81fcaf94ef9013e27c0e578c63",
+      "secs": 35,
+      "ok": false,
+      "text": "[EXPECTED] the acceptance stands; to contest it the client opens an appeal, and every party may then add evidence",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xeedca2f5e207c97deadb72c3e69306c267c54d81fcaf94ef9013e27c0e578c63",
+      "rotations": 1
+    },
+    "walls.stranger_funds": {
+      "name": "walls.stranger_funds",
+      "role": "STRANGER",
+      "fn": "fund_project",
+      "hash": "0x660e917093d485681bdbaab64424c72313982a0eab44f0f99a0f4d967b73ea2d",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"refused\": true, \"reason\": \"only the client funds this project's escrow; any value sent is claimable back\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x660e917093d485681bdbaab64424c72313982a0eab44f0f99a0f4d967b73ea2d",
+      "rotations": 1
+    },
+    "walls.stranger_claims_refund": {
+      "name": "walls.stranger_claims_refund",
+      "role": "STRANGER",
+      "fn": "claim",
+      "hash": "0xce892a48b9dce8674cf85bfd50e85e2eaae1b36fc0798d26c5205595c64512cd",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"claimed_wei\": \"100000000000000000\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xce892a48b9dce8674cf85bfd50e85e2eaae1b36fc0798d26c5205595c64512cd",
+      "rotations": 1
+    },
+    "negative.create": {
+      "name": "negative.create",
+      "role": "CLIENT",
+      "fn": "create_project",
+      "hash": "0x423fc5808f16f0a8ab4eb36aa5e222fc4ff74d65e6efd3c68ce85914e594f7db",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"refused\": false, \"project_id\": \"pr-00002\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x423fc5808f16f0a8ab4eb36aa5e222fc4ff74d65e6efd3c68ce85914e594f7db",
+      "rotations": 1
+    },
+    "negative.milestone": {
+      "name": "negative.milestone",
+      "role": "CLIENT",
+      "fn": "add_milestone",
+      "hash": "0xd72a0b90df98f8fe558fc5e3535d47396757f44fe81cc93f215b46fe0386fe58",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"milestone_id\": \"ms-00002\", \"version\": 1}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xd72a0b90df98f8fe558fc5e3535d47396757f44fe81cc93f215b46fe0386fe58",
+      "rotations": 1
+    },
+    "negative.accept": {
+      "name": "negative.accept",
+      "role": "CONTRACTOR",
+      "fn": "accept_project",
+      "hash": "0xf65af34216e4569690b21eed640227282c39e642ac44acdcb0ce37733c894e5b",
+      "secs": 40,
+      "ok": true,
+      "text": "{\"project_id\": \"pr-00002\", \"state\": \"ACTIVE\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xf65af34216e4569690b21eed640227282c39e642ac44acdcb0ce37733c894e5b",
+      "rotations": 1
+    },
+    "negative.photo1": {
+      "name": "negative.photo1",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0x37dfcf553c51400802a07fcf2225e6243e243a5189446a45b6e8d5070eda4168",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000004\", \"sha256\": \"4627ad2d30cba5360b2ada0ae70507e96d708491f3e154811667790e6a805f62\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x37dfcf553c51400802a07fcf2225e6243e243a5189446a45b6e8d5070eda4168",
+      "rotations": 1
+    },
+    "negative.photo2": {
+      "name": "negative.photo2",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0xa3cec1c9172e286ee1313396301aebf36d0312166b2e25740112f4dfca650585",
+      "secs": 41,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000005\", \"sha256\": \"c5fcb4858affa6a1079e85df3bf158296e46b36dd7f41b3f478ecb30fb0c14ef\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xa3cec1c9172e286ee1313396301aebf36d0312166b2e25740112f4dfca650585",
+      "rotations": 1
+    },
+    "negative.assess": {
+      "name": "negative.assess",
+      "role": "CONTRACTOR",
+      "fn": "request_assessment",
+      "hash": "0x0029fb108e36256b214165dbf5aa85939216e726c181ef8c3f9977f54ca862dc",
+      "secs": 111,
+      "ok": true,
+      "text": "{\"round\": 1, \"decision\": \"REJECTED\", \"criteria\": [{\"id\": \"C1\", \"status\": \"NOT_MET\"}, {\"id\": \"C2\", \"status\": \"MET\"}, {\"id\": \"C3\", \"status\": \"MET\"}]}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x0029fb108e36256b214165dbf5aa85939216e726c181ef8c3f9977f54ca862dc",
+      "rotations": 2,
+      "nodes": [
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": null,
+          "model": "policy:dev-deepseek"
+        },
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": "disagree",
+          "model": "policy:dev-deepseek"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "anthropic/claude-sonnet-4.6"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-grok"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-gemini"
+        },
+        {
+          "rotation": 2,
+          "from": "leader",
+          "vote": null,
+          "model": "anthropic/claude-sonnet-4.6"
+        },
+        {
+          "rotation": 2,
+          "from": "leader",
+          "vote": "idle",
+          "model": "anthropic/claude-sonnet-4.6"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "agree",
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "agree",
+          "model": "policy:dev-grok"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "agree",
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-gemini"
+        }
+      ]
+    },
+    "injection.create": {
+      "name": "injection.create",
+      "role": "CLIENT",
+      "fn": "create_project",
+      "hash": "0xde0aae882e2023354b5f4c76071bba874a88c61afb1d566b39e4157ec6269808",
+      "secs": 40,
+      "ok": true,
+      "text": "{\"refused\": false, \"project_id\": \"pr-00003\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xde0aae882e2023354b5f4c76071bba874a88c61afb1d566b39e4157ec6269808",
+      "rotations": 1
+    },
+    "injection.milestone": {
+      "name": "injection.milestone",
+      "role": "CLIENT",
+      "fn": "add_milestone",
+      "hash": "0xca94545b1cc004e783b7859cfdcb96794df4831cfe356e7d36fcef62b14892a6",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"milestone_id\": \"ms-00003\", \"version\": 1}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xca94545b1cc004e783b7859cfdcb96794df4831cfe356e7d36fcef62b14892a6",
+      "rotations": 1
+    },
+    "injection.accept": {
+      "name": "injection.accept",
+      "role": "CONTRACTOR",
+      "fn": "accept_project",
+      "hash": "0xcaf623aa324ca932a11f32c1455eb0835f8ed84e1f312b894328ecdf90f687ff",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"project_id\": \"pr-00003\", \"state\": \"ACTIVE\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xcaf623aa324ca932a11f32c1455eb0835f8ed84e1f312b894328ecdf90f687ff",
+      "rotations": 1
+    },
+    "injection.photo1": {
+      "name": "injection.photo1",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0x70e91318e44377211da69ba3caabb333058031ab3df888474040fca0edc4dfea",
+      "secs": 37,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000006\", \"sha256\": \"4627ad2d30cba5360b2ada0ae70507e96d708491f3e154811667790e6a805f62\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x70e91318e44377211da69ba3caabb333058031ab3df888474040fca0edc4dfea",
+      "rotations": 1
+    },
+    "injection.photo2": {
+      "name": "injection.photo2",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0xeb104d602e819df97ff1b20702d3ad5dbce953d456f724e44551b0be865c83a4",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000007\", \"sha256\": \"c5fcb4858affa6a1079e85df3bf158296e46b36dd7f41b3f478ecb30fb0c14ef\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xeb104d602e819df97ff1b20702d3ad5dbce953d456f724e44551b0be865c83a4",
+      "rotations": 1
+    },
+    "injection.document": {
+      "name": "injection.document",
+      "role": "CONTRACTOR",
+      "fn": "submit_document",
+      "hash": "0x3b7db5eccba2db67644a8ef1f1d30789ba57409b770d9c6de2ab63ef7e016fc4",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000008\", \"sha256\": \"85fe3130ffce310a09497c55ccd82a31d957b6f4fa7394437a38f0313a987591\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x3b7db5eccba2db67644a8ef1f1d30789ba57409b770d9c6de2ab63ef7e016fc4",
+      "rotations": 1
+    },
+    "injection.declaration": {
+      "name": "injection.declaration",
+      "role": "CONTRACTOR",
+      "fn": "submit_declaration",
+      "hash": "0xb2a30e1be41f222497bd0586dce089633cfd919893d508b3ba011906614dbe8e",
+      "secs": 40,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000009\", \"sha256\": \"f8f66de5af3d352dba31d4b47c30b196dc424bd26b0b4bed180d49c864e95f81\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xb2a30e1be41f222497bd0586dce089633cfd919893d508b3ba011906614dbe8e",
+      "rotations": 1
+    },
+    "injection.assess": {
+      "name": "injection.assess",
+      "role": "CONTRACTOR",
+      "fn": "request_assessment",
+      "hash": "0x9622f2c1b2903ca9ceef0d51c5315bde50d4b2d09a04bd1c4c1c1daa8b5da3f4",
+      "secs": 66,
+      "ok": true,
+      "text": "{\"round\": 1, \"decision\": \"REJECTED\", \"criteria\": [{\"id\": \"C1\", \"status\": \"NOT_MET\"}, {\"id\": \"C2\", \"status\": \"MET\"}, {\"id\": \"C3\", \"status\": \"MET\"}]}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x9622f2c1b2903ca9ceef0d51c5315bde50d4b2d09a04bd1c4c1c1daa8b5da3f4",
+      "rotations": 1,
+      "nodes": [
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": null,
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": "idle",
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "agree",
+          "model": "policy:dev-gpt-5-4"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "agree",
+          "model": "anthropic/claude-sonnet-4.6"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-grok"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "agree",
+          "model": "openai/gpt-5.4"
+        }
+      ]
+    },
+    "mirror.create": {
+      "name": "mirror.create",
+      "role": "CLIENT",
+      "fn": "create_project",
+      "hash": "0xaabeac81b641e65aa8fb55b240fba9320b06a9776657e1e94a0d1d643c0d846e",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"refused\": false, \"project_id\": \"pr-00004\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xaabeac81b641e65aa8fb55b240fba9320b06a9776657e1e94a0d1d643c0d846e",
+      "rotations": 1
+    },
+    "mirror.milestone": {
+      "name": "mirror.milestone",
+      "role": "CLIENT",
+      "fn": "add_milestone",
+      "hash": "0x24811b158524e96edb6e6c6d2738c243dd9c04142f18e7c87b0540facfdfab04",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"milestone_id\": \"ms-00004\", \"version\": 1}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x24811b158524e96edb6e6c6d2738c243dd9c04142f18e7c87b0540facfdfab04",
+      "rotations": 1
+    },
+    "mirror.accept": {
+      "name": "mirror.accept",
+      "role": "CONTRACTOR",
+      "fn": "accept_project",
+      "hash": "0x2ee39c5dabf0b28867cde52051c94688172ee0b4f2151024c98ca4a11ad61469",
+      "secs": 41,
+      "ok": true,
+      "text": "{\"project_id\": \"pr-00004\", \"state\": \"ACTIVE\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x2ee39c5dabf0b28867cde52051c94688172ee0b4f2151024c98ca4a11ad61469",
+      "rotations": 1
+    },
+    "mirror.photo1": {
+      "name": "mirror.photo1",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0x2ee6dc5c9c0798be7f5dcabd88337aae6e5bd40799f27f1193fde1e0a5c2881b",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000010\", \"sha256\": \"c8aa03e721ff8bbbec799ea3d797c1a3c6b1de4adc7bca8a7e930d71b5e048b1\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x2ee6dc5c9c0798be7f5dcabd88337aae6e5bd40799f27f1193fde1e0a5c2881b",
+      "rotations": 1
+    },
+    "mirror.photo2": {
+      "name": "mirror.photo2",
+      "role": "CONTRACTOR",
+      "fn": "submit_image",
+      "hash": "0x6d42d557150dad1e197b4549baa05d02a1318ae186b333dd30a2925063e9fbde",
+      "secs": 37,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000011\", \"sha256\": \"82252076f53fc90699721bb4126fff70430490715c8e0af5d417c6fb2b4f43ce\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x6d42d557150dad1e197b4549baa05d02a1318ae186b333dd30a2925063e9fbde",
+      "rotations": 1
+    },
+    "mirror.client_declaration": {
+      "name": "mirror.client_declaration",
+      "role": "CLIENT",
+      "fn": "submit_declaration",
+      "hash": "0xba7da24368f5b46d91e0f8e0d23820070dbef904eabb3cb67e12a9c9f7e6d465",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000012\", \"sha256\": \"5819f8ffb1cb6d3da50c0b0becd178db87252a383926eed6fdfa8e78d93cf112\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xba7da24368f5b46d91e0f8e0d23820070dbef904eabb3cb67e12a9c9f7e6d465",
+      "rotations": 1
+    },
+    "mirror.assess": {
+      "name": "mirror.assess",
+      "role": "CONTRACTOR",
+      "fn": "request_assessment",
+      "hash": "0x327588dcd28deeabe3c34720611764950ec6b5bd99d74c2e60befa68e6b80829",
+      "secs": 101,
+      "ok": true,
+      "text": "{\"round\": 1, \"decision\": \"ACCEPTED\", \"criteria\": [{\"id\": \"C1\", \"status\": \"MET\"}, {\"id\": \"C2\", \"status\": \"MET\"}, {\"id\": \"C3\", \"status\": \"MET\"}]}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x327588dcd28deeabe3c34720611764950ec6b5bd99d74c2e60befa68e6b80829",
+      "rotations": 2,
+      "nodes": [
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": null,
+          "model": "policy:dev-deepseek"
+        },
+        {
+          "rotation": 1,
+          "from": "leader",
+          "vote": "idle",
+          "model": "policy:dev-deepseek"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-sonnet"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "openai/gpt-5.4"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "policy:dev-gpt-oss"
+        },
+        {
+          "rotation": 1,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "google/gemini-3-flash-preview"
+        },
+        {
+          "rotation": 2,
+          "from": "leader",
+          "vote": null,
+          "model": "openai/gpt-5.4"
+        },
+        {
+          "rotation": 2,
+          "from": "leader",
+          "vote": "agree",
+          "model": "openai/gpt-5.4"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "agree",
+          "model": "google/gemini-3-flash-preview"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "agree",
+          "model": "policy:dev-gemini"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "disagree",
+          "model": "policy:dev-gpt-oss"
+        },
+        {
+          "rotation": 2,
+          "from": "validator",
+          "vote": "idle",
+          "model": "policy:dev-sonnet"
+        }
+      ]
+    },
+    "conflict.appeal": {
+      "name": "conflict.appeal",
+      "role": "CLIENT",
+      "fn": "open_appeal",
+      "hash": "0x744f78be254e8e9de1291c29f39b36c871c87f9569c67b7e98a03e74bc3c8fb1",
+      "secs": 36,
+      "ok": true,
+      "text": "{\"milestone_id\": \"ms-00004\", \"state\": \"APPEALED\", \"evidence_ends\": \"2026-09-20T01:58:00Z\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x744f78be254e8e9de1291c29f39b36c871c87f9569c67b7e98a03e74bc3c8fb1",
+      "rotations": 1
+    },
+    "conflict.photo": {
+      "name": "conflict.photo",
+      "role": "CLIENT",
+      "fn": "submit_image",
+      "hash": "0xf492b08e6cbf6de183556e7f434ffbe52cdd287d3ad28764a8e2ca863dabfd0a",
+      "secs": 37,
+      "ok": true,
+      "text": "{\"item_id\": \"ev-000013\", \"sha256\": \"b6e80508dd2ede6408e5f8b22436178c28a1b2c842d3c8c9268217682881f6cc\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xf492b08e6cbf6de183556e7f434ffbe52cdd287d3ad28764a8e2ca863dabfd0a",
+      "rotations": 1
+    },
+    "walls.decide_early": {
+      "name": "walls.decide_early",
+      "role": "STRANGER",
+      "fn": "decide_appeal",
+      "hash": "0x986b8c904cae6428b586c033212764dbcd0fda39721cf656dd5e58d7d362985d",
+      "secs": 36,
+      "ok": false,
+      "text": "[EXPECTED] the appeal's evidence period is still open",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x986b8c904cae6428b586c033212764dbcd0fda39721cf656dd5e58d7d362985d",
+      "rotations": 1
+    },
+    "flagship.finalize": {
+      "name": "flagship.finalize",
+      "role": "STRANGER",
+      "fn": "finalize",
+      "hash": "0x63f4e524b2a1e53e50a6251c767634994ae1e4fdfd565511512a20a1986937bc",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"milestone_id\": \"ms-00001\", \"state\": \"FINALIZED\", \"paid_wei\": \"2000000000000000000\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0x63f4e524b2a1e53e50a6251c767634994ae1e4fdfd565511512a20a1986937bc",
+      "rotations": 1
+    },
+    "flagship.claim": {
+      "name": "flagship.claim",
+      "role": "CONTRACTOR",
+      "fn": "claim",
+      "hash": "0xee856463ee41e3df6363541831a913af10b1ef68df8662c332198c7481a5767f",
+      "secs": 35,
+      "ok": true,
+      "text": "{\"claimed_wei\": \"2000000000000000000\"}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xee856463ee41e3df6363541831a913af10b1ef68df8662c332198c7481a5767f",
+      "rotations": 1
+    },
+    "conflict.decide": {
+      "name": "conflict.decide",
+      "role": "STRANGER",
+      "fn": "decide_appeal",
+      "hash": "0xb45e470edc36b36fffe6cb82d99c9abba133f563e4ac10b753a00b8f7f66d6c2",
+      "secs": 101,
+      "ok": true,
+      "text": "{\"round\": 2, \"decision\": \"UNDETERMINED\", \"reviewed_round\": 1, \"new_items\": [\"ev-000013\"]}",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xb45e470edc36b36fffe6cb82d99c9abba133f563e4ac10b753a00b8f7f66d6c2",
+      "rotations": 2
+    },
+    "walls.finalize_unconfirmed": {
+      "name": "walls.finalize_unconfirmed",
+      "role": "STRANGER",
+      "fn": "finalize",
+      "hash": "0xe5a344b719c69e8b952016c0ee2060a0b2e5fab255c1d2cea98170e998b6666a",
+      "secs": 41,
+      "ok": false,
+      "text": "[EXPECTED] only a standing acceptance can be finalized",
+      "explorer": "https://explorer-studio-dev.genlayer.com/tx/0xe5a344b719c69e8b952016c0ee2060a0b2e5fab255c1d2cea98170e998b6666a",
+      "rotations": 1
+    }
+  },
+  "pending": {},
+  "flagship": {
+    "pid": "pr-00001",
+    "mid": "ms-00001",
+    "round": 1,
+    "window_ends": "2026-09-20T01:35:54Z",
+    "wallet_delta_wei": "1999873695249999177"
+  },
+  "negative": {
+    "pid": "pr-00002",
+    "mid": "ms-00002",
+    "round": 1,
+    "decisive": [
+      "C1"
+    ]
+  },
+  "injection": {
+    "pid": "pr-00003",
+    "mid": "ms-00003",
+    "round": 1,
+    "observed_decision": "REJECTED"
+  },
+  "mirror": {
+    "pid": "pr-00004",
+    "mid": "ms-00004",
+    "round": 1,
+    "evidence_ends": "2026-09-20T01:58:00Z"
+  },
+  "conflict": {
+    "mid": "ms-00004",
+    "round": 2,
+    "decision": "UNDETERMINED",
+    "conflicts_detected": true
+  },
+  "finished_at": "2026-09-20T02:00:35.350Z",
+  "stats": {
+    "evidence_items": 13,
+    "finalized": 1,
+    "milestones": 4,
+    "paid_wei": "2000000000000000000",
+    "projects": 4,
+    "rounds": 5
+  },
+  "source_commit": "d6a9870"
+}

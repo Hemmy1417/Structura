@@ -8,7 +8,7 @@ is read from the chain.
 ```
   browser: web/ (Next.js)                            GenLayer Studio Next, chain 61997
  ┌───────────────────────────────┐   views         ┌──────────────────────────────────────────┐
- │ sheets        app/            │ ──────────────► │ STRUCTURA   contracts/structura.py       │
+ │ pages         app/            │ ──────────────► │ STRUCTURA   contracts/structura.py       │
  │ what you can do  lib/acts     │  gen_call,      │                                          │
  │ words        lib/present      │  budgeted       │  projects, milestones, versions          │
  │ reads        lib/read         │                 │  evidence: metadata, image bytes, text   │
@@ -25,7 +25,7 @@ is read from the chain.
 | part | what it is |
 |---|---|
 | `contracts/structura.py` | the contract: every rule, every record, every payment |
-| `web/` | the app: a drawing set of sheets, served by Vercel, no API routes |
+| `web/` | the app: the pages a person uses, served by Vercel, no API routes |
 | `scripts/` | deploy, byte-verify, operate by hand, and run the live proofs |
 | `tests/direct/` | the contract's tests: a strict stub harness and the official SDK runner |
 | `tests/mutation/`, `web/tests/mutation/` | sweeps that break each rule and prove a test notices |
@@ -105,25 +105,27 @@ the invariants and the tests that hold them.
 | `lib/kit.ts` | the Transaction Kit bound to that provider; `claim` priced by simulation so its transfer carries the measured message allocations |
 | `lib/read.ts`, `lib/useChain.ts` | typed views, budgeted to the network's 30 calls a minute, with retries and caches for what cannot change |
 | `lib/acts.ts` | what each person can do next, as a pure function of the record, the address and the clock |
-| `lib/present.ts` | the one place machine values become words: labels, amounts, dates, sheet numbers |
+| `lib/present.ts` | the one place machine values become words: labels, amounts, dates, and the prose filter that keeps a model's text readable |
 | `lib/images.ts` | photographs and video frames redrawn in the browser as JFIF JPEGs under 400 KB |
 | `lib/receipt.ts` | a transaction's receipt decoded: the contract's refusal sentence, the panel that decided a round |
 | `lib/txlog.ts` | which transaction decided which round: remembered by the browser that sent it, or read from the published proof log |
 
 ### Pages
 
-Every page is a sheet of a drawing set, numbered in its title block.
+Each page is a stack of full-bleed bands with one reading column, and nothing a machine wrote
+appears in that column: addresses, digests and identifiers live inside a disclosure a reader
+opens.
 
-| sheet | page |
+| page | what it holds |
 |---|---|
-| S-00 | cover: what STRUCTURA is and the deployment it reads |
-| S-01 | the project register: every project, and yours |
-| S-02 | a new project: parties, escrow, appeal window |
-| P-001 | a project: parties, escrow, milestones, history, and the client's and contractor's acts |
-| M-001 | a milestone: the terms and their versions, the evidence, the standing decision, every act available to the viewer and why any other is not |
-| M-001/1 | a round's payment certificate: the evidence snapshot with digests recomputed in the browser, the criteria, the decision, and the panel from the transaction receipt |
-| S-03 | how it works, and what it cannot know |
-| S-04 | verification: the deployment, how to check its bytes, the live proofs |
+| the start | what STRUCTURA is, the deployment's live figures, and the projects on it |
+| the register | every project, newest first, or only the ones the connected wallet is named in |
+| a new project | parties, escrow and the appeal window |
+| a project | parties, escrow, milestones, history, and the acts open to the viewer |
+| a milestone | the terms and their versions, the evidence, the standing decision, every act available and the reason any other is not |
+| a round | the whole record: the criteria, the evidence it read with digests recomputed in the browser, the leading validator's notes, and the panel from the transaction receipt |
+| how it works | the question the validators answer, and what nobody can know from a photograph |
+| verification | the deployment, how to check its bytes, and the live proofs |
 
 ### Reads and writes
 

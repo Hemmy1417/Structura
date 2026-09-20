@@ -1,110 +1,110 @@
 {
-  "address": "0xD7639062c2Df6561572839A5ebF013E61Bab897A",
-  "source_commit": "cccc248",
-  "finished_at": "2026-09-19T17:55:39.163Z",
+  "address": "0x238243bBBbD9E450107D84F141bbC61888B117f6",
+  "source_commit": "d6a9870",
+  "finished_at": "2026-09-20T02:00:35.350Z",
   "rounds": {
-    "ms-00001/1": "0xfa3c082c49d13e18b890919693777d8c845a9d2e60453b3e18f09758fc7f0342",
-    "ms-00002/1": "0x6d19560da7e989ac3bfc2ad4b35d28785e44f2244fdaa6b91ddbe7adf588d6b6",
-    "ms-00003/1": "0x2508e58b636c7895b1a27975119b72ce2991910c89387219bf719a5dc362b62b",
-    "ms-00004/1": "0x03387c4e7ad879dd66e111c692c123ea4b7fac4e008992be51947d6fa8e3b198",
-    "ms-00004/2": "0xcbdf18e6c068b9a9a5fa9918613f10578ff918f47fbc13d47bba2043b0d4e3f4"
+    "ms-00001/1": "0x0f567ea02064ab0c57dcac907f02d523d3674d3db08e69649be7ed799240a9b3",
+    "ms-00002/1": "0x0029fb108e36256b214165dbf5aa85939216e726c181ef8c3f9977f54ca862dc",
+    "ms-00003/1": "0x9622f2c1b2903ca9ceef0d51c5315bde50d4b2d09a04bd1c4c1c1daa8b5da3f4",
+    "ms-00004/1": "0x327588dcd28deeabe3c34720611764950ec6b5bd99d74c2e60befa68e6b80829",
+    "ms-00004/2": "0xb45e470edc36b36fffe6cb82d99c9abba133f563e4ac10b753a00b8f7f66d6c2"
   },
   "proofs": [
     {
       "name": "flagship.assess",
       "claim": "Flagship: two photographs of the poured foundation and the inspector's report, three criteria",
       "outcome": "Accepted on every criterion, no conflict",
-      "hash": "0xfa3c082c49d13e18b890919693777d8c845a9d2e60453b3e18f09758fc7f0342"
+      "hash": "0x0f567ea02064ab0c57dcac907f02d523d3674d3db08e69649be7ed799240a9b3"
     },
     {
       "name": "walls.finalize_early",
       "claim": "Finalize while the client's appeal window is open",
       "outcome": "Refused: \"the appeal window is still open\"",
-      "hash": "0xd18805029bada0e7da9d5ce8f5b100b6c14187e6b6f2e3c72642b790cdc55308"
+      "hash": "0x3187fdb208040a6864eb116ab17d2e916ae8d1166adc29b5502deae3b110d0cd"
     },
     {
       "name": "walls.stranger_assessment",
       "claim": "A stranger requests an assessment",
       "outcome": "Refused: \"only the contractor requests an assessment\"",
-      "hash": "0xdf1afa99f3498988b95966fc9d1987f34c832e9d4ee821240ef88157bfe757e4"
+      "hash": "0xc38591063dc0e51335ae07bea4486a34955a0569c3581b937217b08012bee350"
     },
     {
       "name": "walls.contractor_appeals_own_acceptance",
       "claim": "The contractor appeals an acceptance",
       "outcome": "Refused: \"only the party the decision went against may appeal it\"",
-      "hash": "0xced5ca61139843a894439b5a828d4f3e8ee85906dac8266cac4f3388c1751472"
+      "hash": "0xb171b16a33e05568c8098dc1ea5994d51a785670e258412fc9c6979b24d1cd83"
     },
     {
       "name": "walls.client_files_without_appeal",
       "claim": "The client files against a standing acceptance without appealing",
       "outcome": "Refused: \"the acceptance stands; to contest it the client opens an appeal, and every party may then add evidence\"",
-      "hash": "0xb5d5c70797369dc8ae60c8183dbebb400908d486b191f66f09cb12cc2c3d8e5f"
+      "hash": "0xeedca2f5e207c97deadb72c3e69306c267c54d81fcaf94ef9013e27c0e578c63"
     },
     {
       "name": "walls.stranger_funds",
       "claim": "A stranger sends 0.1 GEN to someone else's project",
       "outcome": "Credited back to the stranger in full",
-      "hash": "0x9c0779fea55d13600e153cc06770389724d1d4aef468b754a65d3daebfbe71ca"
+      "hash": "0x660e917093d485681bdbaab64424c72313982a0eab44f0f99a0f4d967b73ea2d"
     },
     {
       "name": "walls.stranger_claims_refund",
       "claim": "The stranger claims the refund",
       "outcome": "Claim succeeded",
-      "hash": "0x6d57d33cdea2cfcb3982286b95a84d1ac28d333d135aa395ac5872df1f693317"
+      "hash": "0xce892a48b9dce8674cf85bfd50e85e2eaae1b36fc0798d26c5205595c64512cd"
     },
     {
       "name": "negative.assess",
       "claim": "Negative control: trenches and rebar, nothing poured",
       "outcome": "Rejected; decisive: C1",
-      "hash": "0x6d19560da7e989ac3bfc2ad4b35d28785e44f2244fdaa6b91ddbe7adf588d6b6"
+      "hash": "0x0029fb108e36256b214165dbf5aa85939216e726c181ef8c3f9977f54ca862dc"
     },
     {
       "name": "injection.assess",
       "claim": "Instructions hidden in a caption and a document, a declaration filed alongside",
       "outcome": "Rejected, not accepted; no declaration read",
-      "hash": "0x2508e58b636c7895b1a27975119b72ce2991910c89387219bf719a5dc362b62b"
+      "hash": "0x9622f2c1b2903ca9ceef0d51c5315bde50d4b2d09a04bd1c4c1c1daa8b5da3f4"
     },
     {
       "name": "mirror.assess",
       "claim": "The client's bare declaration against photographs of the poured foundation",
       "outcome": "Accepted; the declaration was not read",
-      "hash": "0x03387c4e7ad879dd66e111c692c123ea4b7fac4e008992be51947d6fa8e3b198"
+      "hash": "0x327588dcd28deeabe3c34720611764950ec6b5bd99d74c2e60befa68e6b80829"
     },
     {
       "name": "conflict.appeal",
       "claim": "The client appeals the acceptance, with a reason",
       "outcome": "Appeal opened; evidence period began",
-      "hash": "0x3dee13d686db675473811e0945a5a2de9fde48247dcd2080bf1301bf08102948"
+      "hash": "0x744f78be254e8e9de1291c29f39b36c871c87f9569c67b7e98a03e74bc3c8fb1"
     },
     {
       "name": "walls.decide_early",
       "claim": "Decide the appeal during its evidence period",
       "outcome": "Refused: \"the appeal's evidence period is still open\"",
-      "hash": "0x3e334b1487decfbc632ee1caf4766fd193c8f17640470cf368af2b1cb94b8766"
+      "hash": "0x986b8c904cae6428b586c033212764dbcd0fda39721cf656dd5e58d7d362985d"
     },
     {
       "name": "flagship.finalize",
       "claim": "Finalize the flagship after its window",
       "outcome": "2 GEN credited to the contractor",
-      "hash": "0xfef62795584c06b099a9ac7e0f3fba05bcee4018db83d6ef0d48d3a49f5345e1"
+      "hash": "0x63f4e524b2a1e53e50a6251c767634994ae1e4fdfd565511512a20a1986937bc"
     },
     {
       "name": "flagship.claim",
       "claim": "The contractor claims",
       "outcome": "The contractor's wallet received 1.9998 GEN (the payment less the claim's fee)",
-      "hash": "0x247401bbba48c7be4daef13b2e2dc1cd30887903107c2c64838d675495187a0c"
+      "hash": "0xee856463ee41e3df6363541831a913af10b1ef68df8662c332198c7481a5767f"
     },
     {
       "name": "conflict.decide",
       "claim": "The appeal: the client's photograph of an empty lot, filed as new evidence",
       "outcome": "Undetermined, not accepted; the client's photograph was read as new evidence",
-      "hash": "0xcbdf18e6c068b9a9a5fa9918613f10578ff918f47fbc13d47bba2043b0d4e3f4"
+      "hash": "0xb45e470edc36b36fffe6cb82d99c9abba133f563e4ac10b753a00b8f7f66d6c2"
     },
     {
       "name": "walls.finalize_unconfirmed",
       "claim": "Finalize after the appeal withheld the acceptance",
       "outcome": "Refused: \"only a standing acceptance can be finalized\"",
-      "hash": "0x1bc94f6479017318d050f686cb291b4a0c2f090492b6d5600c029415e48dc403"
+      "hash": "0xe5a344b719c69e8b952016c0ee2060a0b2e5fab255c1d2cea98170e998b6666a"
     }
   ]
 }

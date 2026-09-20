@@ -242,11 +242,14 @@ leader was observed being replaced in the live appeal round
 Next.js App Router, TypeScript strict, Tailwind, pnpm, Transaction Kit 0.1.0-rc.2 with
 genlayer-js 2.0.0-rc.1, EIP-6963 wallets, in-app test GEN, budgeted reads (30 reads a minute
 per IP on Studio Next), a single presentation module so no raw identifier reaches a screen,
-and a pure availability function deciding every action and its reason. The visual design, a
-drawing set, was chosen with the user before any page was built: every page is a numbered
-sheet (S-00 cover, S-01 project register, S-02 new project, S-03 how it works, S-04
-verification), each project and milestone its own sheet with terms, evidence, assessment,
-appeal and settlement, and each round a payment certificate with the panel's receipt.
+and a pure availability function deciding every action and its reason. The visual design was
+chosen with the user: a drawing set was built first and rejected, and the interface now
+follows the product-page system the user supplied (white cards on a grey canvas, one blue
+action pill per page, accent colours only as a tinted headline word or an outlined status,
+hairlines instead of shadows, a single typeface). Pages: the start, the register, a new
+project, a project, a milestone, one round's full record, how it works, and verification.
+Nothing a machine wrote appears in a reading column; addresses, digests and identifiers live
+inside disclosures.
 
 ## 14. Demo evidence
 

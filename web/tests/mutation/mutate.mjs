@@ -44,6 +44,7 @@ const M = [
   ["images", "JFIF insert drops a byte", "out.set(jpeg.subarray(2), 2 + JFIF_APP0.length);", "out.set(jpeg.subarray(3), 2 + JFIF_APP0.length);"],
   ["images", "small images enlarged", "const scale = Math.min(1, edge / Math.max(width, height));", "const scale = edge / Math.max(width, height);"],
   ["images", "EXIF JPEG passes as JFIF", "b[3] === 0xe0", "(b[3] & 0xf0) === 0xe0"],
+  ["present", "record ids printed in a model's prose", String.raw`\b(ev|ms|pr)-0*(\d+)\b`, String.raw`\b(ev|ms|pr)-NEVER(\d+)\b`],
   ["present", "tiny amounts read as zero", `if (!fracText && frac > 0n) fracText = "0001";`, ""],
   ["present", "relative time says now too long", "if (Math.abs(diff) < 45) return \"now\";", "if (Math.abs(diff) < 4500) return \"now\";"],
   ["present", "model tag left in refusals", String.raw`/\[EXPECTED\]|\[LLM_ERROR\]/g`, String.raw`/\[EXPECTED\]/g`],

@@ -60,9 +60,12 @@ describe("ids and enums never reach a screen raw", () => {
 
   it("prints what a model or a party wrote without dashes or control characters", () => {
     expect(present.prose("Both images show beams — ev-000010 shows formwork."))
-      .toBe("Both images show beams, ev-000010 shows formwork.");
+      .toBe("Both images show beams, item 10 shows formwork.");
     expect(present.prose("the beams, — and the footings")).toBe("the beams, and the footings");
     expect(present.prose("cured 2011–2012")).toBe("cured 2011-2012");
+    expect(present.prose("ev-000010 shows the beam; ev-000013 does not"))
+      .toBe("item 10 shows the beam; item 13 does not");
+    expect(present.prose("recorded against ms-00004 in pr-00001")).toBe("recorded against milestone 4 in project 1");
     expect(present.prose("— a note")).toBe("a note");
     expect(present.prose("two  spaceshere")).toBe("two spaces here");
     expect(present.prose("keeps\nlines")).toBe("keeps\nlines");

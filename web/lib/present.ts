@@ -130,11 +130,14 @@ export const roundName = (kind: string, n: number) => `${roundKind(kind) || "Rou
 
 /* ── text someone else wrote ── */
 
+const NAMED: Record<string, string> = { ev: "item", ms: "milestone", pr: "project" };
+
 /**
- * A model's reasoning or a party's caption, as this app prints it: no em or
- * en dashes (a dash between words becomes a comma, a dash inside a range
- * becomes a hyphen), no control characters, no doubled spaces. The record
- * keeps the original bytes; this is only how they read on a page.
+ * A model's reasoning or a party's caption, as this app prints it: record
+ * ids read as the names a person uses, no em or en dashes (a dash between
+ * words becomes a comma, a dash inside a range becomes a hyphen), no control
+ * characters, no doubled spaces. The record keeps the original bytes; this
+ * is only how they read on a page.
  */
 export function prose(text: string | null | undefined): string {
   if (!text) return "";
@@ -143,6 +146,7 @@ export function prose(text: string | null | undefined): string {
     return code < 0x20 && c !== "\n" ? " " : c;
   }).join("");
   return noControl
+    .replace(/\b(ev|ms|pr)-0*(\d+)\b/gi, (_m, kind: string, n: string) => `${NAMED[kind.toLowerCase()]} ${n}`)
     .replace(/^[ \t]*[—–][ \t]*/gm, "")
     .replace(/([0-9A-Za-z])[—–]([0-9A-Za-z])/g, "$1-$2")
     .replace(/[ \t]*[—–][ \t]*/g, ", ")

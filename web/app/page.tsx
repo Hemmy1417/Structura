@@ -39,6 +39,10 @@ export default function Cover() {
   const recent = recentRead.data;
   const featured = featuredRead.data ?? null;
   const example = workedExample(featured);
+  // The section is a curated extra, so a deployment with nothing judged yet
+  // simply has none. A read that failed is not the same thing, and says so.
+  const showExample = !!FEATURED_PROJECT
+    && (featuredRead.loading || !!featuredRead.error || (!!featured && !!example));
   const error = statsRead.error ?? recentRead.error;
   const retry = () => { statsRead.reload(); recentRead.reload(); featuredRead.reload(); };
 
@@ -134,8 +138,13 @@ export default function Cover() {
 
       <Band tone="white" wide>
        <div className="grid gap-14">
-        {featured && example ? (
+        {showExample ? (
           <Section title="A worked example">
+            {featuredRead.error ? (
+              <ReadFailure error={featuredRead.error} onRetry={() => featuredRead.reload()} />
+            ) : !featured || !example ? (
+              <Loading what="the worked example" />
+            ) : (
             <div className="card grid gap-8 lg:grid-cols-[1.35fr_1fr]">
               <div>
                 <p className="kicker">{present.prose(featured.title)}</p>
@@ -180,6 +189,7 @@ export default function Cover() {
                 ) : null}
               </dl>
             </div>
+            )}
           </Section>
         ) : null}
         <Section

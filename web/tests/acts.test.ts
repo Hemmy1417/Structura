@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { coverageGap, filingClosed, MARGIN_MS, milestoneActs, projectActs, roleIn } from "@/lib/acts";
-import type { ConfigView, ItemView, MilestoneView, ProjectView } from "@/lib/types";
+import { coverageGap, filingClosed, MARGIN_MS, milestoneActs, projectActs, roleIn, workedExample } from "@/lib/acts";
+import type { ConfigView, ItemView, MilestoneSummary, MilestoneView, ProjectView } from "@/lib/types";
 
 const CLIENT = "0x691e25a08e00Fa16Fc95b159589ba563727d77a8";
 const CONTRACTOR = "0x56e71175C0772a21a6170E3D95184f126526e9f2";
@@ -211,5 +211,42 @@ describe("coverage", () => {
     expect(coverageGap(m, ["ev-000001", "ev-000002"])).toBe("");
     const onlyWords = milestone({ versions: [{ ...milestone().versions[0]!, evidence_requirements: [] }] }, [item(3, "CONTRACTOR", "DECLARATION")]);
     expect(coverageGap(onlyWords, ["ev-000003"])).toMatch(/at least one image or document/);
+  });
+});
+
+describe("the worked example on the cover", () => {
+  const summary = (over: Record<string, unknown> = {}): MilestoneSummary => ({
+    milestone_id: "ms-00001", index: 1, state: "AWAITING_EVIDENCE", title: "Foundation",
+    payment_wei: "2000000000000000000", deadline: "2026-10-20T12:00:00Z", current_version: 1,
+    latest_version: 1, pending_version: null, standing: null, appeal: null, rounds_count: 0,
+    ...over,
+  } as unknown as MilestoneSummary);
+  const decided = (decision: string, state: string, id: string) => summary({
+    milestone_id: id, state, rounds_count: 1,
+    standing: { round: 1, decision, at: "2026-09-20T01:25:00Z", kind: "ASSESSMENT",
+      appealable: false, appealed: false, window_ends: null, item_mark: 0 },
+  });
+
+  const of = (...ms: MilestoneSummary[]) => project({ milestone_summaries: ms });
+
+  it("features nothing until a round has decided something", () => {
+    expect(workedExample(null)).toBeNull();
+    expect(workedExample(of())).toBeNull();
+    expect(workedExample(of(summary()))).toBeNull();
+    // a state without a round behind it proves nothing
+    expect(workedExample(of(summary({ state: "ACCEPTED" })))).toBeNull();
+    // nor a round with no decision standing, nor a decision with no round
+    expect(workedExample(of(summary({ rounds_count: 1 })))).toBeNull();
+    expect(workedExample(of(decided("ACCEPTED", "ACCEPTED", "ms-00001")))).not.toBeNull();
+    expect(workedExample(of(summary({ rounds_count: 0, standing: { round: 1, decision: "ACCEPTED" } })))).toBeNull();
+  });
+
+  it("prefers a milestone that was paid, then one that was accepted", () => {
+    const paid = decided("ACCEPTED", "FINALIZED", "ms-00003");
+    const accepted = decided("ACCEPTED", "ACCEPTED", "ms-00002");
+    const rejected = decided("REJECTED", "REJECTED", "ms-00001");
+    expect(workedExample(of(rejected, accepted, paid))?.milestone_id).toBe("ms-00003");
+    expect(workedExample(of(rejected, accepted))?.milestone_id).toBe("ms-00002");
+    expect(workedExample(of(rejected))?.milestone_id).toBe("ms-00001");
   });
 });

@@ -6,7 +6,7 @@
  * close a minute early, because a transaction signed at the last second can
  * execute after it.
  */
-import type { ConfigView, ItemView, MilestoneView, ProjectView, Role } from "./types";
+import type { ConfigView, ItemView, MilestoneSummary, MilestoneView, ProjectView, Role } from "./types";
 
 export const MARGIN_MS = 60_000;
 
@@ -258,4 +258,18 @@ export function coverageGap(m: MilestoneView, named: string[]): string {
   }
   if (!chosen.length) return "Choose at least one image or document.";
   return "";
+}
+
+/**
+ * The milestone of the featured project that shows the whole path, for the
+ * cover: one a round has actually decided, a paid one first, then an
+ * accepted one. A milestone still waiting on evidence demonstrates nothing,
+ * so nothing is featured until one has been judged.
+ */
+export function workedExample(p: ProjectView | null | undefined): MilestoneSummary | null {
+  const decided = (p?.milestone_summaries ?? []).filter((m) => !!m.standing && m.rounds_count > 0);
+  return decided.find((m) => m.state === "FINALIZED")
+    ?? decided.find((m) => m.standing?.decision === "ACCEPTED")
+    ?? decided[0]
+    ?? null;
 }

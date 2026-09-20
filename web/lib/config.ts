@@ -12,6 +12,13 @@ export const CONTRACT_ADDRESS = (override || RECORD_ADDRESS) as `0x${string}`;
 export const CONTRACT_CONFIGURED = /^0x[0-9a-fA-F]{40}$/.test(CONTRACT_ADDRESS);
 export const IS_RECORD = CONTRACT_ADDRESS.toLowerCase() === RECORD_ADDRESS.toLowerCase();
 
+/**
+ * The demonstration the cover features as a worked example. It names a
+ * project on the deployment of record only: pointed at another deployment
+ * the app features nothing, because that id would mean something else there.
+ */
+export const FEATURED_PROJECT = IS_RECORD ? "pr-00001" : "";
+
 /** The repository whose contract file this deployment was built from. */
 export const REPO_URL = "https://github.com/Hemmy1417/Structura";
 export const SOURCE_URL = `${REPO_URL}/blob/main/contracts/structura.py`;

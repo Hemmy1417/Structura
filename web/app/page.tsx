@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 
-import { Chip, Empty, Gen, Loading, ReadFailure, Stat, toneOfState } from "@/components/bits";
+import { Chip, Empty, Gen, Loading, ReadFailure, Stat, StateChip, When, toneOfState } from "@/components/bits";
 import { Band, Hero, Section } from "@/components/Page";
+import { workedExample } from "@/lib/acts";
+import { FEATURED_PROJECT } from "@/lib/config";
 import * as present from "@/lib/present";
 import { getProject, getStats, listProjects } from "@/lib/read";
 import type { ProjectView } from "@/lib/types";
@@ -31,10 +33,14 @@ export default function Cover() {
     const projects = await Promise.all(page.project_ids.map((id) => getProject(id, fresh)));
     return projects.filter((p): p is ProjectView => !!p);
   });
+  const featuredRead = useChain("cover.featured", (fresh) =>
+    (FEATURED_PROJECT ? getProject(FEATURED_PROJECT, fresh) : Promise.resolve(null)));
   const stats = statsRead.data;
   const recent = recentRead.data;
+  const featured = featuredRead.data ?? null;
+  const example = workedExample(featured);
   const error = statsRead.error ?? recentRead.error;
-  const retry = () => { statsRead.reload(); recentRead.reload(); };
+  const retry = () => { statsRead.reload(); recentRead.reload(); featuredRead.reload(); };
 
   return (
     <>
@@ -127,6 +133,55 @@ export default function Cover() {
       </Band>
 
       <Band tone="white" wide>
+       <div className="grid gap-14">
+        {featured && example ? (
+          <Section title="A worked example">
+            <div className="card grid gap-8 lg:grid-cols-[1.35fr_1fr]">
+              <div>
+                <p className="kicker">{present.prose(featured.title)}</p>
+                <p className="subheading mt-3 max-w-[28ch]">{present.prose(example.title)}</p>
+                <p className="body-sm mt-4 max-w-[58ch] text-slate">
+                  {example.state === "FINALIZED"
+                    ? "The whole path on one record: terms signed, evidence filed and hashed by the contract, every criterion judged, and the payment released."
+                    : "The whole path on one record: terms signed, evidence filed and hashed by the contract, and every criterion judged."}
+                </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <Link href={`/projects/${featured.project_id}`} className="btn btn-neutral btn-sm no-underline">
+                    Open the record
+                  </Link>
+                  {example.standing ? (
+                    <Link
+                      href={`/milestones/${example.milestone_id}/rounds/${example.standing.round}`}
+                      className="btn btn-neutral btn-sm no-underline"
+                    >
+                      Read the decision
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+              <dl className="grid content-start gap-3">
+                <div className="flex items-baseline justify-between gap-4 border-b border-fog py-2">
+                  <dt className="caption">Outcome</dt>
+                  <dd><StateChip state={example.state} /></dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4 border-b border-fog py-2">
+                  <dt className="caption">Payment</dt>
+                  <dd className="tabular font-semibold"><Gen wei={example.payment_wei} /></dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-4 border-b border-fog py-2">
+                  <dt className="caption">Rounds judged</dt>
+                  <dd className="tabular font-semibold">{example.rounds_count}</dd>
+                </div>
+                {example.standing ? (
+                  <div className="flex items-baseline justify-between gap-4 py-2">
+                    <dt className="caption">Decided</dt>
+                    <dd className="body-sm text-slate"><When iso={example.standing.at} withTime={false} /></dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+          </Section>
+        ) : null}
         <Section
           title="Latest projects"
           aside={<Link href="/projects" className="link">See all projects</Link>}
@@ -173,6 +228,7 @@ export default function Cover() {
             they are not anyone&apos;s real contract.
           </p>
         </Section>
+       </div>
       </Band>
     </>
   );

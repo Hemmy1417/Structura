@@ -110,6 +110,7 @@ Doubt and conflict never pay.
 
 | | |
 |---|---|
+| Live app | https://struc-tura.vercel.app |
 | Network | GenLayer Studio Next |
 | Chain ID | 61997 |
 | RPC | `https://studio-next.genlayer.com/api` |

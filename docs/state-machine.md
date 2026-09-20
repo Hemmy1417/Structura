@@ -59,7 +59,7 @@ AWAITING_TERMS ──accept_project / accept_version (contractor)──► AWAIT
 
 | state | who moves it | what moves it | if nobody acts |
 |---|---|---|---|
-| AWAITING_TERMS | contractor | signs the pending version | anyone closes it after the deadline |
+| AWAITING_TERMS | contractor | signs the pending version, while that version's own deadline stands | anyone closes it once no signable version is left |
 | AWAITING_EVIDENCE | contractor | requests an assessment before the deadline | anyone closes it after the deadline |
 | ACCEPTED | client, or anyone | the client appeals inside the window; anyone finalizes after it | finalize is always available once the window passes |
 | REJECTED | contractor, or anyone | the contractor appeals inside the window or requests a new assessment before the deadline | anyone closes it after the deadline and the window |
@@ -85,5 +85,12 @@ AWAITING_TERMS ──accept_project / accept_version (contractor)──► AWAIT
   is as long as the window.
 - **Caps.** Five assessments per version of the terms; each conclusive one may be appealed
   once. Six versions per milestone, twelve milestones per project.
+- **A version is signed only while its own deadline stands.** Signing a version whose deadline
+  has passed would discard the terms in force, their evidence and their decision for terms
+  nothing could ever be filed against. The contractor's signature on a project skips such a
+  version rather than failing the whole signature.
+- **A close waits for terms the contractor can still sign.** While a proposed version's own
+  deadline has not passed, the permissionless close is refused, so a renegotiation cannot be
+  ended by a stranger, the clock, or the client who offered it.
 - **Terminal states never change.** FINALIZED and CLOSED records are not rewritten by any
   later action, including cancelling the project.

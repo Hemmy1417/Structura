@@ -574,3 +574,15 @@ def test_every_prompt_asks_for_english(module, c):
     pid, mid, items = ready(module, c)
     assess(module, c, mid, items)
     assert prompts() and all("Write in English." in p["prompt"] for p in prompts())
+
+
+def test_a_validator_that_cannot_judge_disagrees_in_words(module, c):
+    """Its model answered with something that is not a judgment: it cannot
+    confirm the leader, and the receipt says why instead of carrying a
+    crashed node."""
+    pid, mid, items = ready(module, c)
+    with pytest.raises(err(module), match="validators did not agree"):
+        assess(module, c, mid, items, judge=judge_all("MET"), v_judge="the model wrote prose, not JSON")
+    nothing_recorded(c, mid)
+    assert any(line.startswith("[DISAGREE] this validator could not judge the evidence")
+               for line in prints())

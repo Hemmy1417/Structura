@@ -180,7 +180,7 @@ def test_nothing_acts_on_a_finalized_milestone(module, c):
 def test_nothing_acts_on_a_closed_milestone(module, c):
     pid, mid = active_milestone(module, c)
     as_(module, CLIENT)
-    c.propose_version(mid, terms(title="Foundation v2", deadline="2026-11-20T12:00:00Z"))
+    c.propose_version(mid, terms(title="Foundation v2", deadline="2026-10-20T11:00:00Z"))
     set_now(AFTER_DEADLINE)
     as_(module, STRANGER)
     c.close_milestone(mid)
@@ -247,3 +247,24 @@ def test_an_appeal_outcome_acceptance_skips_the_window(module, c):
     as_(module, STRANGER)
     c.decide_appeal(mid)
     assert json.loads(c.finalize(mid))["state"] == "FINALIZED"
+
+
+def test_close_waits_for_terms_the_contractor_can_still_sign(module, c):
+    """A permissionless close must not kill a renegotiation: while new terms
+    await signature and their own deadline stands, the milestone lives."""
+    pid, mid = active_milestone(module, c)
+    as_(module, CLIENT)
+    c.propose_version(mid, terms(title="Foundation v2", deadline="2026-11-01T12:00:00Z"))
+    set_now(AFTER_DEADLINE)
+    as_(module, STRANGER)
+    with pytest.raises(err(module), match="new terms await the contractor's signature"):
+        c.close_milestone(mid)
+    as_(module, CONTRACTOR)
+    c.accept_version(mid, 2)
+    assert milestone(c, mid)["current_version"] == 2
+    # Once that version's own deadline passes, anyone can close it.
+    set_now("2026-11-01T12:00:01Z")
+    as_(module, STRANGER)
+    c.close_milestone(mid)
+    assert milestone(c, mid)["state"] == "CLOSED"
+    assert project(c, pid)["reserved_wei"] == "0"

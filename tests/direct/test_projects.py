@@ -293,3 +293,13 @@ def test_unknown_ids_speak(module, c):
         c.get_item("ev-000042")
     with pytest.raises(err(module), match="no image with that id"):
         c.get_image("ev-000042")
+
+
+def test_views_refuse_an_address_they_cannot_read(module, c):
+    """A view answers or refuses in words; it never raises a Python error at
+    a reader who mistypes an address."""
+    for bad in ("", "not-an-address", "0x1234"):
+        with pytest.raises(err(module), match="that is not a wallet address"):
+            c.projects_of(bad, 0, 10)
+        with pytest.raises(err(module), match="that is not a wallet address"):
+            c.get_balance(bad)

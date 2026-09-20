@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from conftest import (CLIENT, CONTRACTOR, CRITERIA, DEADLINE, GEN, REQUIREMENTS, STRANGER,
+from conftest import (CLIENT, CONTRACTOR, CRITERIA, DEADLINE, GEN, INSPECTOR, REQUIREMENTS, STRANGER,
                       active_milestone, as_, assess, create_project, err, image, judge_all,
                       look_all, milestone, project, set_now, terms)
 
@@ -78,11 +78,27 @@ def _req(**over):
     ({"deadline": "2027-09-21T09:00:00Z"}, "more than 365 days out"),
 ])
 def test_invalid_terms_are_refused_in_words(module, c, over, words):
-    pid = create_project(module, c)
+    pid = create_project(module, c, inspector=INSPECTOR)
     as_(module, CLIENT)
     with pytest.raises(err(module), match=words):
         c.add_milestone(pid, terms(**over))
     assert project(c, pid)["reserved_wei"] == "0"
+
+
+def test_terms_cannot_require_an_inspector_the_project_never_named(module, c):
+    """Nobody could file it, so the milestone could never be assessed and its
+    payment could never be released."""
+    pid = create_project(module, c)
+    as_(module, CLIENT)
+    with pytest.raises(err(module), match="asks the inspector, and this project names none"):
+        c.add_milestone(pid, terms(evidence_requirements=[
+            {"text": "Site inspection report", "kind": "DOCUMENT", "from_role": "INSPECTOR", "min_count": 1}]))
+    assert project(c, pid)["reserved_wei"] == "0"
+    # The same rule holds for a later version of an existing milestone.
+    mid = add(module, c, pid)
+    with pytest.raises(err(module), match="asks the inspector, and this project names none"):
+        c.propose_version(mid, terms(evidence_requirements=[
+            {"text": "Site inspection report", "kind": "DOCUMENT", "from_role": "INSPECTOR", "min_count": 1}]))
 
 
 def test_terms_must_be_a_json_object(module, c):
@@ -95,7 +111,7 @@ def test_terms_must_be_a_json_object(module, c):
 
 
 def test_terms_are_stored_canonically(module, c):
-    pid = create_project(module, c)
+    pid = create_project(module, c, inspector=INSPECTOR)
     mid = add(module, c, pid, title="  Foundation\n  completed ",
               criteria=["plain string criterion"],
               evidence_requirements=[_req(kind="document", from_role="inspector")],
@@ -287,3 +303,30 @@ def test_a_rejected_milestone_can_be_renegotiated_and_the_old_decision_lapses(mo
     assert m["state"] == "AWAITING_EVIDENCE" and m["standing"] is None
     with pytest.raises(err(module), match="needs a standing acceptance or rejection"):
         c.open_appeal(mid, "the rejection was wrong")
+
+
+def test_a_version_whose_deadline_has_passed_is_never_signed_into_force(module, c):
+    """Signing it would discard the live terms, their evidence and their
+    decision for terms nothing could be filed against."""
+    pid, mid = active_milestone(module, c)
+    as_(module, CLIENT)
+    c.propose_version(mid, terms(title="Foundation v2", deadline="2026-10-20T11:00:00Z"))
+    set_now("2026-10-20T11:00:01Z")
+    as_(module, CONTRACTOR)
+    with pytest.raises(err(module), match="that version's deadline has passed"):
+        c.accept_version(mid, 2)
+    m = milestone(c, mid)
+    assert m["current_version"] == 1 and m["pending_version"] == 2
+
+
+def test_accepting_a_project_leaves_an_expired_version_unsigned(module, c):
+    """One stale milestone cannot block the signature that starts the rest."""
+    pid = create_project(module, c, escrow=5 * GEN)
+    stale = add(module, c, pid, title="Stale", deadline="2026-10-01T12:00:00Z")
+    live = add(module, c, pid, title="Live", deadline="2026-11-01T12:00:00Z")
+    set_now("2026-10-01T12:00:01Z")
+    as_(module, CONTRACTOR)
+    c.accept_project(pid)
+    assert milestone(c, stale)["current_version"] == 0
+    assert milestone(c, stale)["pending_version"] == 1
+    assert milestone(c, live)["current_version"] == 1

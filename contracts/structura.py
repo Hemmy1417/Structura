@@ -159,6 +159,15 @@ def _refuse(msg: str):
     raise gl.vm.UserError(f"{ERROR_EXPECTED} {msg}")
 
 
+def _address_or_refuse(text) -> str:
+    """An address from a caller, refused in words when it is not one: a view
+    must answer or refuse, never raise a Python error at a reader."""
+    try:
+        return _address(text)
+    except Exception:
+        _refuse("that is not a wallet address")
+
+
 def _num(item_id: str) -> int:
     """The sequence number inside an item id: ev-000042 -> 42."""
     return int(str(item_id).split("-")[1])
@@ -266,7 +275,7 @@ def _quality(statuses: dict, conflicts: bool) -> str:
     return "SUFFICIENT"
 
 
-def _validate_terms(t) -> dict:
+def _validate_terms(t, has_inspector: bool) -> dict:
     """Milestone terms from the client, validated into a canonical form.
     Raises in words; callers that are payable never call this."""
     if not isinstance(t, dict):
@@ -310,6 +319,10 @@ def _validate_terms(t) -> dict:
             _refuse(f"evidence requirement {i + 1} must ask for an IMAGE or a DOCUMENT")
         if role not in ("CONTRACTOR", "INSPECTOR"):
             _refuse(f"evidence requirement {i + 1} must come from the contractor or the inspector")
+        if role == "INSPECTOR" and not has_inspector:
+            # Nobody could ever file it, so the milestone could never be
+            # assessed and its payment could never be released.
+            _refuse(f"evidence requirement {i + 1} asks the inspector, and this project names none")
         cap = min(MAX_NAMED[_bucket(kind)] if role == "CONTRACTOR" else QUOTAS[role][_bucket(kind)], 6)
         if not (1 <= count <= cap):
             _refuse(f"evidence requirement {i + 1} must ask for 1 to {cap} items")
@@ -493,7 +506,7 @@ class Structura(gl.contract.Contract):
     @gl.public.view
     def projects_of(self, addr: str, skip: int, limit: int) -> str:
         """The projects an address was named in, newest first."""
-        a = _address(addr)
+        a = _address_or_refuse(addr)
         total = int(self.counters.get(f"ri|{a}") or "0")
         ids = [self.role_index[f"{a}|{n:06d}"] for n in self._page(total, skip, limit)]
         return json.dumps({"total": total, "project_ids": ids})
@@ -564,7 +577,7 @@ class Structura(gl.contract.Contract):
 
     @gl.public.view
     def get_balance(self, addr: str) -> str:
-        return self.ledger.get(_address(addr)) or '{"claimable": "0", "claimed": "0"}'
+        return self.ledger.get(_address_or_refuse(addr)) or '{"claimable": "0", "claimed": "0"}'
 
     # ── projects and escrow ──────────────────────────────────────────────────
 
@@ -675,9 +688,15 @@ class Structura(gl.contract.Contract):
         p["contractor_accepted_at"] = _iso(now)
         for mid in p["milestones"]:
             m = self._milestone(mid)
-            if m["pending_version"]:
-                self._accept_version(p, m, int(m["pending_version"]), now)
-                self._save_milestone(m)
+            if not m["pending_version"]:
+                continue
+            # A version whose deadline has already passed is left unsigned
+            # rather than failing the whole signature: it closes at its
+            # deadline and the client proposes new terms.
+            if _parse_iso(m["versions"][int(m["pending_version"]) - 1]["deadline"]) <= now:
+                continue
+            self._accept_version(p, m, int(m["pending_version"]), now)
+            self._save_milestone(m)
         self._save_project(p)
         self._event(pid, "PROJECT_ACCEPTED")
         return json.dumps({"project_id": pid, "state": p["state"]})
@@ -709,8 +728,8 @@ class Structura(gl.contract.Contract):
         now = _iso(_now())
         for mid in p["milestones"]:
             m = self._milestone(mid)
-            if m["state"] == "CLOSED":
-                continue          # closed after its deadline already; its record stands
+            if m["state"] in ("CLOSED", "FINALIZED"):
+                continue          # already settled; a terminal record stands
             m["state"] = "CLOSED"
             m["closed_at"] = now
             m["close_reason"] = "the project was cancelled before the contractor accepted it"
@@ -763,7 +782,7 @@ class Structura(gl.contract.Contract):
             raw_terms = json.loads(terms_json)
         except Exception:
             _refuse("the terms must be JSON")
-        terms = _validate_terms(raw_terms)
+        terms = _validate_terms(raw_terms, bool(p.get("inspector")))
         payment = int(terms["payment_wei"])
         if payment > self._unreserved(p):
             _refuse("the escrow does not cover this payment; fund the project first")
@@ -805,7 +824,7 @@ class Structura(gl.contract.Contract):
             raw_terms = json.loads(terms_json)
         except Exception:
             _refuse("the terms must be JSON")
-        terms = _validate_terms(raw_terms)
+        terms = _validate_terms(raw_terms, bool(p.get("inspector")))
         extra = int(terms["payment_wei"]) - int(m["reserved_wei"])
         if extra > self._unreserved(p):
             _refuse("the escrow does not cover the higher payment; fund the project first")
@@ -828,7 +847,10 @@ class Structura(gl.contract.Contract):
             _refuse("that version is not the one awaiting acceptance")
         if m["state"] in ("ACCEPTED", "APPEALED", "FINALIZED", "CLOSED"):
             _refuse("the milestone no longer takes new terms")
-        self._accept_version(p, m, int(version), _now())
+        now = _now()
+        if _parse_iso(m["versions"][int(version) - 1]["deadline"]) <= now:
+            _refuse("that version's deadline has passed; the client proposes new terms")
+        self._accept_version(p, m, int(version), now)
         self._save_milestone(m)
         self._save_project(p)
         self._event(p["project_id"], "VERSION_ACCEPTED", mid, str(version))
@@ -1260,7 +1282,13 @@ class Structura(gl.contract.Contract):
             if not theirs.get("images_received"):
                 print("[DISAGREE] the leader did not receive the images")
                 return False
-            mine = self._observe(ctx)
+            try:
+                mine = self._observe(ctx)
+            except Exception as e:
+                # Its own reading failed: it cannot confirm the leader, and a
+                # receipt should say why rather than carry a crashed node.
+                print("[DISAGREE] this validator could not judge the evidence: " + str(e)[:200])
+                return False
             if not mine["images_received"]:
                 print("[DISAGREE] this validator did not receive the images")
                 return False
@@ -1533,6 +1561,9 @@ class Structura(gl.contract.Contract):
         standing = m.get("standing")
         if standing and standing.get("window_ends") and now <= _parse_iso(standing["window_ends"]):
             _refuse("a decision's appeal window is still open")
+        pending = m.get("pending_version")
+        if pending and _parse_iso(m["versions"][int(pending) - 1]["deadline"]) > now:
+            _refuse("new terms await the contractor's signature and their deadline has not passed")
         released = int(m["reserved_wei"])
         m["state"] = "CLOSED"
         m["closed_at"] = _iso(now)

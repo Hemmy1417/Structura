@@ -54,6 +54,8 @@ Checked in code, at filing:
   count: no round reads them);
 - an item offered for a requirement matches it: images for an image requirement, documents or
   scanned pages for a document requirement, from the party the requirement names;
+- the terms never ask for evidence from an inspector the project did not name: nobody could
+  file it, so the milestone could never be assessed and its payment could never be released;
 - the image's format and size, and the text's length.
 
 Checked by the panel, every round:
@@ -89,6 +91,10 @@ Not knowable by anyone reading the record, and never claimed:
 - The most one round can read is 12 images and 12 texts: 4 named contractor items, 2 contractor
   appeal additions, and the client's and inspector's full quotas. Images go to the model two per
   prompt, the runtime's limit.
+
+A declaration counts against the same text quota as a document, because the contract stores
+and hashes it exactly like one. It is the only quota a party can spend on something no round
+will read.
 
 ## The snapshot in each round record
 

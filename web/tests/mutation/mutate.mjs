@@ -20,6 +20,8 @@ const M = [
   ["acts", "lapse on the boundary", "if (nowMs > lapse)", "if (nowMs >= lapse)"],
   ["acts", "decide on the boundary", `nowMs <= ends ? no("decide_appeal"`, `nowMs < ends ? no("decide_appeal"`],
   ["acts", "close ignores a standing window", `: windowOpen ? no("close_milestone"`, `: false ? no("close_milestone"`],
+  ["acts", "a version is signed after its deadline", `nowMs > ms(pending?.deadline) - MARGIN_MS`, `false`],
+  ["acts", "close kills a live renegotiation", `const renegotiating = !!pending && nowMs <= ms(pending.deadline);`, `const renegotiating = false;`],
   ["acts", "coverage counts declarations", `it.kind !== "DECLARATION" && (it.role !== "CONTRACTOR"`, `(it.role !== "CONTRACTOR"`],
   ["acts", "declarations use the appeal allowance", `m.standing && kind !== "DECLARATION") {`, `m.standing) {`],
   ["acts", "quota off by one", "if (quota !== undefined && mine.length >= quota)", "if (quota !== undefined && mine.length > quota)"],

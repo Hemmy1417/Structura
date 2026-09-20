@@ -179,6 +179,23 @@ describe("milestone acts across the clock", () => {
     expect(acts("2026-10-20T13:00:01Z").close_milestone).toBe(true);
   });
 
+  it("will not sign a version whose own deadline has passed", () => {
+    const pending = { ...milestone().versions[0]!, version: 2, deadline: "2026-09-21T12:00:00Z", title: "Foundation, revised" };
+    const m = milestone({ pending_version: 2, versions: [milestone().versions[0]!, pending] });
+    const acts = (iso: string) => ids(milestoneActs({ project: project(), milestone: m, addr: CONTRACTOR, nowMs: at(iso), config: cfg }));
+    expect(acts("2026-09-21T11:30:00Z")).toMatchObject({ accept_version: true });
+    expect(acts("2026-09-21T12:00:01Z")).toMatchObject({ accept_version: false });
+  });
+
+  it("does not close a milestone while new terms can still be signed", () => {
+    const pending = { ...milestone().versions[0]!, version: 2, deadline: "2026-11-01T12:00:00Z" };
+    const m = milestone({ pending_version: 2, versions: [milestone().versions[0]!, pending] });
+    const acts = (iso: string) => ids(milestoneActs({ project: project(), milestone: m, addr: STRANGER, nowMs: at(iso), config: cfg }));
+    // past the current terms' deadline, but the offer on the table still stands
+    expect(acts("2026-10-20T12:30:00Z")).toMatchObject({ close_milestone: false });
+    expect(acts("2026-11-01T12:00:01Z")).toMatchObject({ close_milestone: true });
+  });
+
   it("caps assessments per version", () => {
     const m = milestone({ version_assessments: 5 });
     const a = milestoneActs({ project: project(), milestone: m, addr: CONTRACTOR, nowMs: at("2026-09-20T09:00:00Z"), config: cfg });

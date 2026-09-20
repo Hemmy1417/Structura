@@ -185,7 +185,23 @@ MUTATIONS = [
     ("a deadline in the past",
      "    if deadline <= now:", "    if False:"),
     ("lookups miss other spellings of an address",
-     "        a = _address(addr)", "        a = str(addr)"),
+     "        a = _address_or_refuse(addr)", "        a = str(addr)"),
+
+    # terms a party could never satisfy, versions signed too late, and the
+    # guards that keep a settled or renegotiated milestone intact
+    ("terms require an inspector the project never named",
+     '        if role == "INSPECTOR" and not has_inspector:', "        if False:"),
+    ("a version is signed after its own deadline",
+     '        if _parse_iso(m["versions"][int(version) - 1]["deadline"]) <= now:', "        if False:"),
+    ("accepting a project signs an expired version",
+     '            if _parse_iso(m["versions"][int(m["pending_version"]) - 1]["deadline"]) <= now:',
+     "            if False:"),
+    ("a close kills terms the contractor can still sign",
+     '        if pending and _parse_iso(m["versions"][int(pending) - 1]["deadline"]) > now:',
+     "        if False:"),
+    ("a view raises at a reader who mistypes an address",
+     "    return self.ledger.get(_address_or_refuse(addr))",
+     "    return self.ledger.get(_address(addr))"),
 ]
 
 

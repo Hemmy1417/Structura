@@ -60,7 +60,8 @@ specification (up to 6,000 characters: the scope, dimensions or layout the work 
 criteria (`[{id, text}]`, at most 8), evidence requirements (`[{id, text, kind: IMAGE|DOCUMENT,
 min_count, from_role: CONTRACTOR|INSPECTOR}]`, at most 8), payment, deadline (UTC).
 Changing any of these proposes a **new version**; the contractor's signature makes it the
-current version. Evidence and rounds always reference the version they belong to, so a
+current version, and only while that version's own deadline still stands. A version that
+requires evidence from an inspector the project never named is refused when it is proposed. Evidence and rounds always reference the version they belong to, so a
 historical decision stays tied to the exact terms it judged.
 
 ## 5. Evidence

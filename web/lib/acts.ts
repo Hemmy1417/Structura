@@ -147,9 +147,12 @@ export function milestoneActs(ctx: MilestoneContext): Act[] {
   const standing = m.standing;
 
   if (who === "CONTRACTOR" && m.pending_version) {
+    const pending = m.versions[m.pending_version - 1];
     acts.push(p.state !== "ACTIVE" ? no("accept_version", "Sign the project first; it signs these terms too.")
       : TERMS_LOCKED.includes(m.state) ? no("accept_version", "The milestone no longer takes new terms.")
-        : ok("accept_version", `Sign version ${m.pending_version} of the terms.`));
+        : nowMs > ms(pending?.deadline) - MARGIN_MS
+          ? no("accept_version", "That version's deadline has passed; the client proposes new terms.")
+          : ok("accept_version", `Sign version ${m.pending_version} of the terms.`));
   }
   if (who === "CLIENT") {
     const maxV = config?.max_versions_per_milestone ?? 6;
@@ -202,9 +205,14 @@ export function milestoneActs(ctx: MilestoneContext): Act[] {
   if (!["ACCEPTED", "APPEALED", "FINALIZED", "CLOSED"].includes(m.state)) {
     const deadline = ms(shownTerms(m).deadline);
     const windowOpen = standing?.window_ends && nowMs <= ms(standing.window_ends);
+    // New terms the contractor can still sign keep the milestone alive, so a
+    // permissionless close cannot end a renegotiation.
+    const pending = m.pending_version ? m.versions[m.pending_version - 1] : null;
+    const renegotiating = !!pending && nowMs <= ms(pending.deadline);
     acts.push(nowMs <= deadline ? no("close_milestone", "The deadline has not passed.")
       : windowOpen ? no("close_milestone", "A decision's appeal window is still open.")
-        : ok("close_milestone", "Anyone can close it: the reservation returns to the client's escrow."));
+        : renegotiating ? no("close_milestone", "New terms await the contractor's signature, and their deadline has not passed.")
+          : ok("close_milestone", "Anyone can close it: the reservation returns to the client's escrow."));
   }
   return acts;
 }

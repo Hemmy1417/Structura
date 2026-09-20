@@ -76,6 +76,24 @@ balance before its single transfer and never waits on a clock (the fee simulator
 stale, and a transfer behind a clock gate could not be priced). [test_projects:
 test_a_refused_creation…; invariant walk: every payable call returns]
 
+**A milestone is made impossible to satisfy.** Terms that ask for evidence from an inspector
+the project never named are refused when they are proposed, because no address could file
+that evidence and the escrow would sit reserved until the deadline. [test_terms:
+test_terms_cannot_require_an_inspector_the_project_never_named]
+
+**A renegotiation is killed, or a stale one is forced through.** A version is signed only
+while its own deadline stands, and a milestone with a signable version cannot be closed by
+anyone until that deadline passes. [test_terms:
+test_a_version_whose_deadline_has_passed_is_never_signed_into_force; test_settlement:
+test_close_waits_for_terms_the_contractor_can_still_sign]
+
+**A reader crashes a view.** Every view answers or refuses in words, including one handed an
+address it cannot read. [test_projects: test_views_refuse_an_address_they_cannot_read]
+
+**A validator's own model fails.** It disagrees, printing why, instead of raising out of the
+vote: a node that cannot judge can never confirm a leader. [test_assessment:
+test_a_validator_that_cannot_judge_disagrees_in_words]
+
 **A process never ends.** Every non-terminal state has an exit anyone can take: milestones close
 after their deadline and window; an appeal can be readjudicated by anyone once its evidence
 period ends, and one that no readjudication decides within three days lapses to UNDETERMINED

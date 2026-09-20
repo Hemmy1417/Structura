@@ -210,9 +210,9 @@ The app's own write path ran live as well: through the same Transaction Kit and 
 the app uses, the flagship's client funded 0.5 GEN, withdrew it and claimed it, each write
 finalized and successful (`pnpm test:live`, transactions in the verification document).
 
-**Tests:** 233 contract tests (a strict stub harness, 11 on the official GenLayer direct runner,
-and a randomized invariant walk), 61 app tests, and two mutation sweeps that break each rule
-and require a failing test: 64 of 64 in the contract, 35 of 35 in the app.
+**Tests:** 239 contract tests (a strict stub harness, 11 on the official GenLayer direct runner,
+and a randomized invariant walk), 64 app tests, and two mutation sweeps that break each rule
+and require a failing test: 69 of 69 in the contract, 37 of 37 in the app.
 
 ## Tech stack
 

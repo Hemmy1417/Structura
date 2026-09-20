@@ -4,7 +4,7 @@
  * override points a checkout at another deployment (a disposable one for
  * testing), and the app says so on every sheet.
  */
-export const RECORD_ADDRESS = "0xdB12cDb2039Aee85c5A1E23490b72f4B676D04c4";
+export const RECORD_ADDRESS = "0x238243bBBbD9E450107D84F141bbC61888B117f6";
 
 const override = process.env.NEXT_PUBLIC_STRUCTURA_CONTRACT?.trim() ?? "";
 

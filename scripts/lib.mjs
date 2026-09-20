@@ -40,7 +40,12 @@ export async function rpc(method, params) {
 }
 
 /** Wait for FINALIZED. FINALIZED is not success: callers check the leader. */
+/** How long a transaction may sit in one non-final status before we call it stalled. */
+const STALL_MS = 8 * 60 * 1000;
+
 export async function waitFinal(hash, { tries = 225, label = "tx" } = {}) {
+  let sameSince = Date.now();
+  let lastStatus = null;
   for (let i = 0; i < tries; i++) {
     await sleep(4000);
     const t = (await rpc("eth_getTransactionByHash", [hash])).result;
@@ -50,6 +55,24 @@ export async function waitFinal(hash, { tries = 225, label = "tx" } = {}) {
       const err = new Error(`${label} ${status}`);
       err.tx = t;
       throw err;
+    }
+    if (status !== lastStatus) {
+      lastStatus = status;
+      sameSince = Date.now();
+    } else if (Date.now() - sameSince > STALL_MS) {
+      // Studio Next can leave a transaction in COMMITTING or REVEALING with
+      // no path forward: the lifecycle says NoOp and nothing behind it in the
+      // contract's queue moves either. Waiting longer never helps.
+      const lc = (await rpc("gen_getTransactionLifecycle", [{ txId: hash }])).result;
+      if (lc?.resolutionAction === "NoOp" && !lc?.decisionActive) {
+        const err = new Error(
+          `${label}: the network stalled this transaction in ${status} with no way forward `
+          + `(${t?.result_name ?? "no result"}); the contract's queue is blocked behind it, so redeploy and rerun`);
+        err.tx = t;
+        err.stalled = true;
+        throw err;
+      }
+      sameSince = Date.now();
     }
     if (i % 10 === 9) console.log(`  … ${label} ${status ?? "pending"}`);
   }

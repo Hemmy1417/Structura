@@ -10,5 +10,7 @@ export default defineConfig({
     environment: "node",
     include: ["tests/live/**/*.live.ts"],
     testTimeout: 900_000,
+    // The checks share signing keys, so two files at once would race for a nonce.
+    fileParallelism: false,
   },
 });

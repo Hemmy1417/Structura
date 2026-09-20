@@ -207,15 +207,18 @@ Every transaction, each round's panel, and what the receipts show beyond the ass
 
 The app's own write path ran live as well, on the same deployment: through the Transaction Kit
 and claim wrapper the app itself uses, the flagship's client funded 0.5 GEN, withdrew it and
-claimed it, each write finalized and successful (`pnpm test:live`, transactions in the
-verification document).
+claimed it, and in a second check the parties renegotiated a milestone's terms, a stranger
+closed one nobody delivered, and a client cancelled a project the contractor never signed
+(`pnpm test:live`, transactions in the verification document). Every act in the interface was
+then opened in a browser against this deployment and the call each page composed was read back
+before it was declined: all nineteen of the contract's writes, each one exact.
 
 Three of the five rounds needed a second leader: the first leader's reading was not reproduced
 by a majority, so it was replaced and nothing was recorded in between.
 
 **Tests:** 239 contract tests (a strict stub harness, 11 on the official GenLayer direct runner,
 and a randomized invariant walk), 64 app tests, and two mutation sweeps that break each rule
-and require a failing test: 69 of 69 in the contract, 37 of 37 in the app.
+and require a failing test: 69 of 69 in the contract, 38 of 38 in the app.
 
 ## Tech stack
 

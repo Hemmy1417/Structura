@@ -108,9 +108,43 @@ extension. On 20 Sep 2026 at 02:01 UTC the flagship's client, through the kit:
 
 The contract's transfer to the client followed as its own transaction
 ([0xade618a0…](https://explorer-studio-dev.genlayer.com/tx/0xade618a0a58c5a751cdd810f1324c6d980d994b308a25af22c3264feed0d83b1)).
-The hashes were read from the explorer afterwards; the test asserts the outcomes. What is not
-covered this way is the browser itself: a wallet extension's popups and the pages' buttons are
-exercised by a person with a wallet.
+The hashes were read from the explorer afterwards; the test asserts the outcomes.
+
+## The terms and closing path
+
+Four writes exist for the cases nobody wants: terms the parties renegotiate, a milestone
+nobody delivers, and a project the contractor never signs. The proof run never reaches them,
+because every one of its milestones is delivered and judged. They are covered by the direct
+tests with the clock warped, and on 20 Sep 2026 between 06:53 and 07:02 UTC they were run live
+as well, through the same kit the app signs with (`web/tests/live/terms-path.live.ts`). The
+deadlines in that check are minutes away rather than weeks, so the closing path fits in one run.
+
+| write | what the test asserts | transaction |
+|---|---|---|
+| `propose_version` | version 2 is pending, version 1 still in force, the reservation unchanged | [`0x776e27b6…`](https://explorer-studio-dev.genlayer.com/tx/0x776e27b68a0f7ef5ca91b6aacb6362abc379dc4413b2eb1973388836f8ff5257) |
+| `accept_version` | version 2 is in force, nothing pending, the reservation follows the agreed payment | [`0xce57c535…`](https://explorer-studio-dev.genlayer.com/tx/0xce57c53589cdb0da95ce93f1180fd64076518be938ed9c0724dfbaef493c5a01) |
+| `close_milestone`, by a stranger | the milestone is closed and the whole reservation is free again | [`0x9abf2540…`](https://explorer-studio-dev.genlayer.com/tx/0x9abf2540d52769e7d78cfffcb6ce2148d79085873ca5bcec3ace5d3666853f2b) |
+| `cancel_project` | the project is cancelled, its escrow is zero, the client's claim grew by the whole escrow | [`0x5b694a91…`](https://explorer-studio-dev.genlayer.com/tx/0x5b694a91901ac6a4cb37752bb2dec31f39dbe4a7e5a753cdfdfc8af7064253f4) |
+
+`lapse_appeal` is the one write with no live run: it can only be sent three days after an
+undecided appeal's evidence period. The direct tests cover it with the clock warped.
+
+## The interface itself
+
+A transaction is only right if the page that builds it is right. On 20 Sep 2026 every act in
+the app was opened in a browser against this deployment, with a stand-in wallet that answers
+reads from the network and refuses to sign, and the transaction each page had composed was
+read back before it was declined. All nineteen of the contract's writes are reachable, and
+each one carried exactly the call the contract expects: the terms JSON the wizard builds, the
+evidence items a chosen assessment presents, an image normalized to under 400 KB with its
+caption and claimed origin, an amount in wei, an appeal's grounds.
+
+Two things showed only there. A claim is priced at 0.001217 GEN, not the flat 0.175 GEN of
+every other write, which is `withTransferAllocations` pricing a transfer by simulation. And a
+refused signature ends as "The request was declined in your wallet. Nothing was submitted."
+
+What a bench cannot do is sign, so the last mile, a real wallet's popup on a real click, is a
+person's own run.
 
 ## Money
 
@@ -120,6 +154,11 @@ the contractor's ledger row at `finalize` and to the contractor's wallet at `cla
 stranger's 0.1 GEN was credited back and claimed. Every other milestone still holds its
 reservation until its deadline, when anyone can close it and return the reservation to the
 client.
+
+Three later projects sit on the same deployment and are not part of the proof run: two written
+by the terms and closing check above, and one named "interface bench", written so the browser
+sweep could reach the acts that exist only before a contractor signs and only while an appeal
+window is open.
 
 ## Before this deployment
 

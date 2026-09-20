@@ -100,6 +100,27 @@ period ends, and one that no readjudication decides within three days lapses to 
 (the appealed decision is not confirmed, so nothing pays on it). See
 [state-machine](state-machine.md).
 
+## Review standards
+
+Systems of this kind, an AI verdict that moves money on evidence a party supplies, draw the
+same findings from reviewers. Each one below is a decision made at design time, not a later
+patch, and each names the code that carries it.
+
+| what reviewers look for | where this build answers it |
+|---|---|
+| Consensus binds every field the money depends on, not only the headline outcome | `_derive` computes the decision in code from the per-criterion ratings; `_unconfirmed` lets a leader's result stand only when this node reproduces that decision and the criteria it rests on; `_decisive` records which those were |
+| Evidence is corroborated where it enters the record, not only where a later round re-reads it | no excerpt is ever chosen by a leader: the contract stores and hashes the bytes at `submit_image` and `submit_document`, and every node runs `_observe` over those same stored bytes |
+| An appeal judges the state that was appealed | `decide_appeal` re-judges the version the appealed round judged, with that round's recorded items plus what was filed since, and tells the panel which items are new |
+| A ruling's fields are validated before they can touch state | `_decide` keeps only recognised statuses, reads anything else as UNCLEAR, and bounds every string it stores |
+| Party-declared labels are disclosed as claims and guardrailed | `_judge` fences every item with its filer's role and tells the panel that a caption or a party's own document can neither establish a criterion, nor make one unclear, nor create a conflict, whichever party wrote it |
+| An obligation is reserved when it is accepted, not when it is paid | `add_milestone` reserves the payment from unreserved escrow, and `accept_version` adjusts the reservation when new terms are signed |
+| Every hold has an exit somebody can actually reach | `close_milestone`, `decide_appeal` and `lapse_appeal` are permissionless |
+| A recorded account is the transaction's signer | the contractor and the inspector are named as data and become parties only by their own signature |
+| Views do not scan without bound | counters and paged indexes, a page ceiling, and per-project caps on milestones and versions |
+| Conservation and post-terminal actions are tested as invariants | the randomized walk asserts that value is neither created nor destroyed, that no transfer exists without a claim, and that settled milestones, recorded rounds and filed items never change |
+| Every act is reachable in the app, not only from scripts | all nineteen contract writes are reachable from a page, and availability is decided by one pure function in `web/lib/acts.ts` that is tested there |
+| A clean checkout reproduces the judged deployment | one address in the app, the proof log and the documents, checked in CI by `web/scripts/check-address.mjs` |
+
 ## Stated limits
 
 - **Photographs prove what they show, not where or when.** Capture dates and positions are
@@ -107,6 +128,17 @@ period ends, and one that no readjudication decides within three days lapses to 
   contractor who photographs someone else's finished foundation, consistently, can mislead it.
   The defences are the client's contest window, the client's own evidence, and an inspector
   requirement in the terms.
+- **Independent corroboration is the client's option, not a floor the money path enforces.**
+  The terms decide whether an inspector's report is required. Where they do not require one, an
+  acceptance can rest on the contractor's own photographs, and nothing in the settlement path
+  demands a second, independent source. The client chooses that when writing the terms and
+  funds the escrow knowing it; their remedy is the contest window. Terms that require an
+  inspector are the stronger shape, and the demonstration project uses them.
+- **A clearly failed criterion rejects even when another is unclear.** Doubt withholds an
+  acceptance, but it does not withhold a rejection: `_derive` returns REJECTED as soon as one
+  criterion is found not met, whatever the others say, and the record marks only the unmet ones
+  as decisive. A rejection pays nobody and takes nothing; the escrow stays reserved and the
+  contractor may file more evidence and ask again, or appeal.
 - **Counter-evidence can hold a payment.** A client who files images of another place creates
   a genuine conflict, and conflicts never pay. The record shows who filed what; the remedy is
   more evidence, ideally the inspector's.

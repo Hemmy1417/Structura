@@ -115,22 +115,42 @@ const EVENT: Record<EventView["kind"], string> = {
 };
 export const eventKind = (s: string) => label(EVENT, s);
 
-/* ── record ids as sheet numbers ── */
+/* ── record ids as names ── */
 
 function tail(id: string): number {
   const n = Number(String(id).split("-")[1]);
   return Number.isFinite(n) ? n : 0;
 }
 
-/** pr-00001 reads "P-001", the project's sheet number. */
-export const projectSheet = (pid: string) => `P-${String(tail(pid)).padStart(3, "0")}`;
-/** ms-00012 reads "M-012". */
-export const milestoneSheet = (mid: string) => `M-${String(tail(mid)).padStart(3, "0")}`;
-/** A round's certificate number: "M-012/2". */
-export const certificateNo = (mid: string, n: number) => `${milestoneSheet(mid)}/${n}`;
 /** ev-000013 reads "Item 13". */
 export const itemName = (eid: string) => `Item ${tail(eid)}`;
 export const itemNumber = (eid: string) => tail(eid);
+/** A round by kind and number: "Assessment 1", "Appeal 2". */
+export const roundName = (kind: string, n: number) => `${roundKind(kind) || "Round"} ${n}`;
+
+/* ── text someone else wrote ── */
+
+/**
+ * A model's reasoning or a party's caption, as this app prints it: no em or
+ * en dashes (a dash between words becomes a comma, a dash inside a range
+ * becomes a hyphen), no control characters, no doubled spaces. The record
+ * keeps the original bytes; this is only how they read on a page.
+ */
+export function prose(text: string | null | undefined): string {
+  if (!text) return "";
+  const noControl = Array.from(String(text), (c) => {
+    const code = c.charCodeAt(0);
+    return code < 0x20 && c !== "\n" ? " " : c;
+  }).join("");
+  return noControl
+    .replace(/^[ \t]*[—–][ \t]*/gm, "")
+    .replace(/([0-9A-Za-z])[—–]([0-9A-Za-z])/g, "$1-$2")
+    .replace(/[ \t]*[—–][ \t]*/g, ", ")
+    .replace(/,\s*,/g, ",")
+    .replace(/\s+,/g, ",")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
 
 /* ── amounts ── */
 

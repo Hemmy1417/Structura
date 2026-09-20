@@ -41,9 +41,9 @@ function RequirementPick({ reqs, value, onChange }: {
 }) {
   return (
     <Field label="Offered for" hint="Which requirement of the terms this item answers. The validators treat it as your claim.">
-      <select className="field" value={value} onChange={(e) => onChange(e.target.value)}>
+      <select className="input" value={value} onChange={(e) => onChange(e.target.value)}>
         <option value="">No particular requirement</option>
-        {reqs.map((r) => <option key={r.id} value={r.id}>{r.id}: {r.text}</option>)}
+        {reqs.map((r) => <option key={r.id} value={r.id}>{present.prose(r.text)}</option>)}
       </select>
     </Field>
   );
@@ -166,17 +166,17 @@ export function FilePanel({ ctx, role }: { ctx: MilestoneContext; role: Role }) 
   const ready = tab === "DOCUMENT" || tab === "DECLARATION" ? text.trim().length > 0 && text.length <= maxText : !!prepared;
 
   return (
-    <div className="panel">
-      <div className="flex flex-wrap border-b border-line" role="tablist" aria-label="Kind of evidence">
+    <div>
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Kind of evidence">
         {TABS.map((t) => (
           <button key={t.id} type="button" role="tab" aria-selected={tab === t.id}
             onClick={() => { reset(); setTab(t.id); }}
-            className={`px-3 py-2 text-sm ${tab === t.id ? "bg-ink text-sheet" : "hover:bg-paper"}`}>
+            className={`btn btn-sm ${tab === t.id ? "btn-primary" : "btn-neutral"}`}>
             {t.label}
           </button>
         ))}
       </div>
-      <div className="grid gap-4 p-4">
+      <div className="mt-5 grid gap-5">
         {closed ? <Notice tone="quiet" title="Filing is closed for you here">{closed}</Notice> : signing && kit ? (
           <TxPanel kit={kit} tx={tx} confirmText="File it on the record"
             onDone={(o) => { if (o.successful) window.setTimeout(reset, 1500); }}
@@ -186,23 +186,23 @@ export function FilePanel({ ctx, role }: { ctx: MilestoneContext; role: Role }) 
             {tab === "PHOTO" || tab === "SCAN" ? (
               <Field label={tab === "SCAN" ? "A scanned page" : "A photograph"}
                 hint="Any common image. It is redrawn here at up to 1,024 pixels as a JPEG under 400 KB.">
-                <input className="field" type="file" accept="image/*" onChange={(e) => void pickImage(e.target.files?.[0])} />
+                <input className="input" type="file" accept="image/*" onChange={(e) => void pickImage(e.target.files?.[0])} />
               </Field>
             ) : null}
 
             {tab === "VIDEO_FRAME" ? (
               <div className="grid gap-3">
                 <Field label="A video" hint="The validators cannot watch video; you choose the frames that show the work.">
-                  <input className="field" type="file" accept="video/*" onChange={(e) => void pickVideo(e.target.files?.[0])} />
+                  <input className="input" type="file" accept="video/*" onChange={(e) => void pickVideo(e.target.files?.[0])} />
                 </Field>
                 {video && duration > 0 ? (
                   <div className="grid gap-2">
-                    <label className="text-sm">
-                      Frame at <span className="figure">{timecode(at)}</span> of <span className="figure">{timecode(duration)}</span>
+                    <label className="body-sm">
+                      Frame at <span className="tabular">{timecode(at)}</span> of <span className="tabular">{timecode(duration)}</span>
                       <input type="range" className="mt-1 block w-full" min={0} max={Math.max(0, Math.floor(duration))} step={1}
                         value={at} onChange={(e) => setAt(Number(e.target.value))} />
                     </label>
-                    <button type="button" className="btn btn-line justify-self-start" disabled={preparing} onClick={() => void takeFrame()}>
+                    <button type="button" className="btn btn-neutral justify-self-start" disabled={preparing} onClick={() => void takeFrame()}>
                       Take this frame
                     </button>
                   </div>
@@ -210,26 +210,26 @@ export function FilePanel({ ctx, role }: { ctx: MilestoneContext; role: Role }) 
               </div>
             ) : null}
 
-            {preparing ? <p className="text-sm text-ink-2">Preparing the image…</p> : null}
+            {preparing ? <p className="body-sm text-slate">Preparing the image</p> : null}
 
             {prepared && (tab === "PHOTO" || tab === "SCAN" || tab === "VIDEO_FRAME") ? (
               <div className="grid gap-4 sm:grid-cols-[200px_1fr]">
                 <div className="grid content-start gap-1">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={prepared.preview} alt="What will be filed" className="aspect-[4/3] w-full border border-line object-cover" />
-                  <p className="label">{prepared.width} by {prepared.height} pixels, {present.size(prepared.bytes.length)}</p>
+                  <img src={prepared.preview} alt="What will be filed" className="aspect-[4/3] w-full rounded-[10px] object-cover" />
+                  <p className="caption">{prepared.width} by {prepared.height} pixels, {present.size(prepared.bytes.length)}</p>
                 </div>
                 <div className="grid content-start gap-3">
                   <Field label="Caption" hint="What the image shows, in your words.">
-                    <input className="field" maxLength={200} value={caption} onChange={(e) => setCaption(e.target.value)} />
+                    <input className="input" maxLength={200} value={caption} onChange={(e) => setCaption(e.target.value)} />
                   </Field>
                   {tab !== "VIDEO_FRAME" ? (
                     <div className="grid gap-3 sm:grid-cols-2">
                       <Field label="Taken (claimed)" hint={capture ? "Read from the photo's own data." : "Optional."}>
-                        <input className="field figure" maxLength={40} value={capture} onChange={(e) => setCapture(e.target.value)} />
+                        <input className="input tabular" maxLength={40} value={capture} onChange={(e) => setCapture(e.target.value)} />
                       </Field>
                       <Field label="Place (claimed)" hint={place ? "Read from the photo's own data." : "Optional."}>
-                        <input className="field" maxLength={200} value={place} onChange={(e) => setPlace(e.target.value)} />
+                        <input className="input" maxLength={200} value={place} onChange={(e) => setPlace(e.target.value)} />
                       </Field>
                     </div>
                   ) : null}
@@ -242,17 +242,17 @@ export function FilePanel({ ctx, role }: { ctx: MilestoneContext; role: Role }) 
               <div className="grid gap-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Field label="Title">
-                    <input className="field" maxLength={200} value={docTitle} onChange={(e) => setDocTitle(e.target.value)} placeholder="Site inspection report" />
+                    <input className="input" maxLength={200} value={docTitle} onChange={(e) => setDocTitle(e.target.value)} placeholder="Site inspection report" />
                   </Field>
                   <Field label="Reference (optional)" hint="A report or drawing number.">
-                    <input className="field" maxLength={200} value={reference} onChange={(e) => setReference(e.target.value)} placeholder="IR-0042" />
+                    <input className="input" maxLength={200} value={reference} onChange={(e) => setReference(e.target.value)} placeholder="IR-0042" />
                   </Field>
                 </div>
                 <Field label="The document's text" hint={`${text.length.toLocaleString("en-US")} of ${maxText.toLocaleString("en-US")} characters. A scanned page goes under Scanned page instead.`}>
-                  <textarea className="field min-h-40" value={text} maxLength={maxText} onChange={(e) => setText(e.target.value)} />
+                  <textarea className="input min-h-40" value={text} maxLength={maxText} onChange={(e) => setText(e.target.value)} />
                 </Field>
                 <Field label="Or load a text file">
-                  <input className="field" type="file" accept=".txt,.md,text/plain,text/markdown" onChange={(e) => void loadText(e.target.files?.[0])} />
+                  <input className="input" type="file" accept=".txt,.md,text/plain,text/markdown" onChange={(e) => void loadText(e.target.files?.[0])} />
                 </Field>
                 <RequirementPick reqs={reqs} value={requirement} onChange={setRequirement} />
               </div>
@@ -261,16 +261,16 @@ export function FilePanel({ ctx, role }: { ctx: MilestoneContext; role: Role }) 
             {tab === "DECLARATION" ? (
               <Field label="Your declaration"
                 hint={`A statement in your own name, kept on the record and shown to every party. No round reads it: a party's own word can neither establish nor contest a criterion. To contest a decision, file evidence or appeal. ${text.length} of ${maxText} characters.`}>
-                <textarea className="field" value={text} maxLength={maxText} onChange={(e) => setText(e.target.value)} />
+                <textarea className="input" value={text} maxLength={maxText} onChange={(e) => setText(e.target.value)} />
               </Field>
             ) : null}
 
-            {problem ? <p className="text-sm text-fail">{problem}</p> : null}
+            {problem ? <p className="body-sm text-orange">{present.prose(problem)}</p> : null}
             <div className="flex flex-wrap items-center gap-3">
               <button type="button" className="btn btn-primary" disabled={!ready || !!gate} onClick={() => setSigning(true)}>
                 Review and file
               </button>
-              {gate ? <span className="text-sm text-ink-3">{gate}</span> : null}
+              {gate ? <span className="body-sm text-iron">{gate}</span> : null}
             </div>
           </>
         )}

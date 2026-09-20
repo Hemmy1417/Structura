@@ -51,11 +51,22 @@ describe("time", () => {
 });
 
 describe("ids and enums never reach a screen raw", () => {
-  it("turns record ids into sheet numbers", () => {
-    expect(present.projectSheet("pr-00001")).toBe("P-001");
-    expect(present.milestoneSheet("ms-00012")).toBe("M-012");
-    expect(present.certificateNo("ms-00012", 2)).toBe("M-012/2");
+  it("turns record ids into names a person can say", () => {
     expect(present.itemName("ev-000013")).toBe("Item 13");
+    expect(present.itemNumber("ev-000013")).toBe(13);
+    expect(present.roundName("ASSESSMENT", 1)).toBe("Assessment 1");
+    expect(present.roundName("APPEAL", 2)).toBe("Appeal 2");
+  });
+
+  it("prints what a model or a party wrote without dashes or control characters", () => {
+    expect(present.prose("Both images show beams — ev-000010 shows formwork."))
+      .toBe("Both images show beams, ev-000010 shows formwork.");
+    expect(present.prose("the beams, — and the footings")).toBe("the beams, and the footings");
+    expect(present.prose("cured 2011–2012")).toBe("cured 2011-2012");
+    expect(present.prose("— a note")).toBe("a note");
+    expect(present.prose("two  spaceshere")).toBe("two spaces here");
+    expect(present.prose("keeps\nlines")).toBe("keeps\nlines");
+    expect(present.prose(null)).toBe("");
   });
 
   it("labels every contract enum in sentence case", () => {

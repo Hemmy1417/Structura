@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Acts as the drawing set shows them: an available act is a button that
- * opens its transaction inline; an unavailable one is a line with the
- * reason in words, never a button that would fail.
+ * Acts. An available act is a button that opens its transaction inline; an
+ * unavailable one is a line with the contract's reason in words, never a
+ * button that would fail.
  */
 import type { SubmitInput } from "@genlayer/transaction-kit";
 import { useState } from "react";
@@ -15,9 +15,9 @@ import { TxPanel, type TxOutcome } from "./TxPanel";
 
 export function Unavailable({ label, reason }: { label: string; reason: string }) {
   return (
-    <div className="grid gap-0.5 border-l-2 border-line py-1 pl-3 text-sm">
-      <span className="font-semibold text-ink-3">{label}</span>
-      <span className="text-ink-3">{reason}</span>
+    <div className="grid gap-0.5 border-l-2 border-fog py-1 pl-4">
+      <span className="body-sm font-semibold text-iron">{label}</span>
+      <span className="body-sm text-iron">{reason}</span>
     </div>
   );
 }
@@ -38,7 +38,7 @@ export function ActButton({ act, label, tx, value, confirm, working, onDone, ton
   confirm?: string;
   working?: string;
   onDone?: (o: TxOutcome) => void;
-  tone?: "primary" | "line";
+  tone?: "primary" | "neutral";
 }) {
   const kit = useTransactionKit();
   const gate = useSignGate();
@@ -59,11 +59,11 @@ export function ActButton({ act, label, tx, value, confirm, working, onDone, ton
     );
   }
   return (
-    <div className="grid gap-1">
+    <div className="grid gap-1.5">
       <button type="button" className={`btn btn-${tone} w-full sm:w-auto`} disabled={!!gate} onClick={() => setOpen(true)}>
         {label}
       </button>
-      <span className="text-sm text-ink-3">{gate || act.reason}</span>
+      <span className="body-sm text-iron">{gate || act.reason}</span>
     </div>
   );
 }

@@ -1,65 +1,64 @@
 @import "tailwindcss";
 
 /*
- * STRUCTURA, "drawing set": every page is a sheet from an architectural
- * drawing set. Drafting paper with a faint graph grid, graphite linework,
- * hairlines instead of shadows, square corners, and structural amber used
- * the way a drafter uses a revision mark: sparingly, where something needs
- * attention. Status colours live only in marks and stamps.
+ * STRUCTURA. A white gallery: the page is a stack of full-bleed bands, white
+ * or canvas grey, with the content in one left-aligned column. Elevation is
+ * surface contrast and hairlines, never a shadow. One blue pill is the only
+ * filled action on a page, and the other colours tint a single word of a
+ * headline or outline a status, nothing more. Anything a machine wrote (an
+ * address, a digest, an identifier) lives inside a disclosure, never in the
+ * reading flow.
  */
 
 @theme {
-  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-azeret), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --color-paper: #f4f3ef;
-  --color-sheet: #fbfaf6;
-  --color-ink: #1f2226;
-  --color-ink-2: #4b5057;
-  --color-ink-3: #7d8288;
-  --color-line: #c8c5bd;
-  --color-line-soft: #dfddd6;
-  --color-amber: #e39a2d;
-  --color-amber-ink: #87570a;
-  --color-amber-wash: #fbeed6;
-  --color-met: #2e6b4d;
-  --color-met-wash: #e2eee6;
-  --color-fail: #a8362a;
-  --color-fail-wash: #f6e3df;
-  --color-open: #3f5f86;
-  --color-open-wash: #e3eaf3;
+  --color-canvas: #f5f5f7;
+  --color-card: #ffffff;
+  --color-obsidian: #1d1d1f;
+  --color-charcoal: #333336;
+  --color-slate: #474747;
+  --color-iron: #707070;
+  --color-mist: #e2e2e5;
+  --color-fog: #d6d6d6;
 
-  --radius-sheet: 2px;
+  --color-blue: #0071e3;
+  --color-link: #0066cc;
+  --color-green: #03aa49;
+  --color-green-deep: #03873a;
+  --color-violet: #8668ff;
+  --color-orange: #ed6300;
+  --color-teal: #00a1b3;
+
+  --radius-link: 10px;
+  --radius-card: 28px;
+  --radius-panel: 32px;
+  --radius-large: 36px;
+  --radius-pill: 980px;
 }
 
 :root {
   color-scheme: light;
-  --grid-minor: rgba(31, 34, 38, 0.042);
-  --grid-major: rgba(31, 34, 38, 0.075);
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-canvas);
 }
 
 body {
-  background-color: var(--color-paper);
-  background-image:
-    linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px),
-    linear-gradient(to right, var(--grid-minor) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-minor) 1px, transparent 1px);
-  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
-  color: var(--color-ink);
+  background: var(--color-canvas);
+  color: var(--color-obsidian);
   font-family: var(--font-sans);
-  font-feature-settings: "ss01" 1;
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.016em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--color-amber-wash);
-  color: var(--color-ink);
+  background: #d3e4fb;
+  color: var(--color-obsidian);
 }
 
 a {
@@ -67,351 +66,315 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-amber);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-blue);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-/* ── type ── */
+/* ── type ──────────────────────────────────────────────────────────────── */
 
 .display {
-  font-size: clamp(2rem, 1.2rem + 3.2vw, 3.6rem);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.45rem, 1.5rem + 4.2vw, 6rem);
+  line-height: 1.04;
+  letter-spacing: -0.019em;
   font-weight: 600;
 }
 
-.title {
-  font-size: clamp(1.45rem, 1.1rem + 1.2vw, 2.05rem);
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+.heading-lg {
+  font-size: clamp(2rem, 1.3rem + 2.8vw, 4rem);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
   font-weight: 600;
 }
 
 .heading {
-  font-size: 1.05rem;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.44rem);
+  line-height: 1.07;
+  letter-spacing: -0.009em;
   font-weight: 600;
 }
 
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  line-height: 1.3;
-  letter-spacing: 0.01em;
-  color: var(--color-ink-3);
+.heading-sm {
+  font-size: 1.75rem;
+  line-height: 1.14;
+  letter-spacing: -0.009em;
+  font-weight: 600;
 }
 
-.figure {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+.subheading {
+  font-size: 1.3125rem;
+  line-height: 1.33;
+  letter-spacing: 0.011em;
+  font-weight: 600;
+}
+
+.body-sm {
+  font-size: 0.875rem;
+  line-height: 1.43;
   letter-spacing: -0.01em;
 }
 
-.prose-sheet p + p {
-  margin-top: 0.75rem;
+.caption {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  letter-spacing: -0.003em;
+  color: var(--color-iron);
 }
 
-/* ── the sheet ── */
-
-.sheet {
-  background: var(--color-sheet);
-  border: 1px solid var(--color-ink);
-  outline: 1px solid var(--color-line);
-  outline-offset: 4px;
-  border-radius: var(--radius-sheet);
+/* A kicker: the small capitalised label above a display headline. */
+.kicker {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-slate);
 }
 
-.panel {
-  background: var(--color-sheet);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sheet);
+/* Large data: tabular, tighter than the display face. */
+.figure {
+  font-size: 2.75rem;
+  line-height: 1;
+  letter-spacing: -0.022em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.rule {
-  border-top: 1px solid var(--color-line);
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
-.rule-ink {
-  border-top: 1px solid var(--color-ink);
+.tint-green { color: var(--color-green); }
+.tint-blue { color: var(--color-link); }
+.tint-violet { color: var(--color-violet); }
+.tint-orange { color: var(--color-orange); }
+.tint-teal { color: var(--color-teal); }
+
+.link {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
-/* a title block cell: small mono label above its value */
-.tb-cell {
-  padding: 0.5rem 0.75rem;
-  border-left: 1px solid var(--color-ink);
-  min-width: 0;
+/* ── surfaces ──────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  padding: 28px;
 }
 
-.tb-cell:first-child {
-  border-left: 0;
+.card-quiet {
+  background: var(--color-canvas);
+  border-radius: var(--radius-card);
+  padding: 28px;
 }
 
-/* A grid item may shrink below its content's width, so a wide schedule
-   scrolls inside its own wrapper instead of widening the sheet on a phone.
-   In the base layer, so an explicit min-width utility still wins. */
-@layer base {
-  .grid > * {
-    min-width: 0;
-  }
+.hair {
+  border: 1px solid var(--color-fog);
 }
 
-/* ── revision cloud: amber scallops around what needs attention ── */
+.hair-t { border-top: 1px solid var(--color-fog); }
+.hair-b { border-bottom: 1px solid var(--color-fog); }
 
-.cloud {
-  border: 9px solid transparent;
-  border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='27' height='27' viewBox='0 0 27 27'%3E%3Cg fill='none' stroke='%23e39a2d' stroke-width='1.6'%3E%3Cpath d='M0 9 A4.5 4.5 0 0 1 9 9 A4.5 4.5 0 0 1 18 9 A4.5 4.5 0 0 1 27 9'/%3E%3Cpath d='M0 18 A4.5 4.5 0 0 0 9 18 A4.5 4.5 0 0 0 18 18 A4.5 4.5 0 0 0 27 18'/%3E%3Cpath d='M9 0 A4.5 4.5 0 0 0 9 9 A4.5 4.5 0 0 0 9 18 A4.5 4.5 0 0 0 9 27'/%3E%3Cpath d='M18 0 A4.5 4.5 0 0 1 18 9 A4.5 4.5 0 0 1 18 18 A4.5 4.5 0 0 1 18 27'/%3E%3C/g%3E%3C/svg%3E");
-  border-image-slice: 9;
-  border-image-repeat: round;
-  background: var(--color-sheet);
-}
-
-/* ── controls ── */
+/* ── controls ──────────────────────────────────────────────────────────── */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 2.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sheet);
-  font-size: 0.9rem;
+  border-radius: var(--radius-pill);
+  padding: 11px 20px;
+  font-size: 17px;
   font-weight: 600;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.022em;
   line-height: 1.2;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
   cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
-  white-space: nowrap;
 }
 
 .btn:disabled {
+  opacity: 0.42;
   cursor: not-allowed;
-  opacity: 0.55;
 }
 
+/* The only filled chromatic control on a page. */
 .btn-primary {
-  background: var(--color-ink);
-  color: var(--color-sheet);
-  border: 1px solid var(--color-ink);
-  box-shadow: inset 4px 0 0 var(--color-amber);
-  padding-left: 1.2rem;
+  background: var(--color-blue);
+  color: #ffffff;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #2e3238;
+.btn-primary:hover:not(:disabled) { background: #0077ed; }
+
+.btn-neutral {
+  background: var(--color-mist);
+  color: var(--color-charcoal);
 }
 
-.btn-line {
+.btn-neutral:hover:not(:disabled) { background: #d8d8dc; }
+
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+/* A quiet utility control: the nav's search and wallet pills. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-canvas);
+  padding: 7px 14px;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--color-charcoal);
+}
+
+.pill-hair {
   background: transparent;
-  color: var(--color-ink);
-  border: 1px solid var(--color-ink);
+  border: 1px solid var(--color-fog);
 }
 
-.btn-line:hover:not(:disabled) {
-  background: var(--color-paper);
+/* A status: an outline and coloured label, never a fill. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid currentColor;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.33;
 }
 
-.btn-quiet {
-  background: transparent;
-  color: var(--color-ink-2);
-  border: 1px solid transparent;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--color-line);
-}
+/* ── fields ────────────────────────────────────────────────────────────── */
 
-.btn-quiet:hover:not(:disabled) {
-  color: var(--color-ink);
-  text-decoration-color: var(--color-ink);
-}
-
-.field {
+.input {
   display: block;
   width: 100%;
-  min-height: 2.5rem;
-  padding: 0.55rem 0.7rem;
-  background: #ffffff;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sheet);
-  color: var(--color-ink);
-  font-size: 0.95rem;
-  line-height: 1.4;
+  border: 1px solid var(--color-fog);
+  border-radius: var(--radius-link);
+  background: var(--color-card);
+  padding: 11px 14px;
+  font-size: 17px;
+  letter-spacing: -0.016em;
+  color: var(--color-obsidian);
 }
 
-.field:focus {
+.input::placeholder { color: var(--color-iron); }
+
+.input:focus {
   outline: none;
-  border-color: var(--color-ink);
-  box-shadow: 0 0 0 3px var(--color-amber-wash);
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
 }
 
-.field::placeholder {
-  color: var(--color-ink-3);
+textarea.input { min-height: 96px; resize: vertical; line-height: 1.47; }
+
+select.input { appearance: none; padding-right: 36px; }
+
+/* ── disclosure: where machine values live ─────────────────────────────── */
+
+.fold {
+  border: 1px solid var(--color-fog);
+  border-radius: var(--radius-pill);
+  background: transparent;
 }
 
-textarea.field {
-  min-height: 6rem;
-  resize: vertical;
+.fold[open] {
+  border-radius: var(--radius-panel);
+  background: var(--color-card);
 }
 
-input[type="file"].field {
-  padding: 0.4rem;
-  font-size: 0.85rem;
-}
-
-input[type="file"].field::file-selector-button {
-  margin-right: 0.75rem;
-  padding: 0.35rem 0.75rem;
-  border: 1px solid var(--color-ink);
-  border-radius: var(--radius-sheet);
-  background: var(--color-sheet);
-  color: var(--color-ink);
-  font-weight: 600;
+.fold > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   cursor: pointer;
+  list-style: none;
+  padding: 11px 16px;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--color-obsidian);
 }
 
-select.field {
-  appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, var(--color-ink) 50%),
-    linear-gradient(135deg, var(--color-ink) 50%, transparent 50%);
-  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
-  background-size: 5px 5px;
-  background-repeat: no-repeat;
-  padding-right: 2rem;
+.fold > summary::-webkit-details-marker { display: none; }
+
+.fold > summary::before {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-slate);
 }
 
-input[type="range"] {
-  accent-color: var(--color-ink);
+.fold[open] > summary::before { content: "\2212"; }
+
+.fold-body {
+  padding: 4px 20px 20px 20px;
 }
 
-/* ── schedules: the tables on a drawing ── */
+/* ── lists and tables ──────────────────────────────────────────────────── */
+
+.rows > * + * {
+  border-top: 1px solid var(--color-fog);
+}
 
 .schedule {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  text-align: left;
 }
 
 .schedule th {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 400;
-  color: var(--color-ink-3);
-  text-align: left;
-  padding: 0.45rem 0.75rem;
-  border-bottom: 1px solid var(--color-ink);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-iron);
+  padding: 0 16px 10px 0;
+  border-bottom: 1px solid var(--color-fog);
 }
 
 .schedule td {
-  padding: 0.65rem 0.75rem;
-  border-bottom: 1px solid var(--color-line-soft);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  padding: 14px 16px 14px 0;
+  border-bottom: 1px solid var(--color-fog);
   vertical-align: top;
 }
 
-.schedule tr:last-child td {
-  border-bottom: 0;
-}
+.schedule tr:last-child td { border-bottom: 0; }
 
-/* ── stamps and marks ── */
+/* ── motion ────────────────────────────────────────────────────────────── */
 
-.stamp {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.3rem 0.65rem;
-  border: 2px solid currentColor;
-  outline: 1px solid currentColor;
-  outline-offset: 2px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  border-radius: 1px;
-}
-
-.mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.12rem 0.5rem;
-  border: 1px solid currentColor;
-  border-radius: 1px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.tone-met {
-  color: var(--color-met);
-  background: var(--color-met-wash);
-}
-
-.tone-fail {
-  color: var(--color-fail);
-  background: var(--color-fail-wash);
-}
-
-.tone-open {
-  color: var(--color-open);
-  background: var(--color-open-wash);
-}
-
-.tone-amber {
-  color: var(--color-amber-ink);
-  background: var(--color-amber-wash);
-}
-
-.tone-quiet {
-  color: var(--color-ink-2);
-  background: var(--color-paper);
-}
-
-/* a detail callout: the circled number a drawing uses to key a detail */
-.callout {
-  display: inline-grid;
-  place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border: 1.5px solid var(--color-ink);
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  flex: none;
-}
-
-/* the revision triangle */
-.rev {
-  display: inline-grid;
-  place-items: center;
-  width: 1.25rem;
-  height: 1.1rem;
-  background: var(--color-amber);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: 600;
-  padding-top: 0.2rem;
-  color: var(--color-ink);
-  flex: none;
-}
-
-/* ── motion ── */
-
-@keyframes pulse-line {
-  0% { background-position: 0 0; }
-  100% { background-position: 40px 0; }
-}
-
+/* A write in flight: a hairline that travels, never a spinner. */
 .working {
-  background-image: repeating-linear-gradient(90deg, var(--color-amber) 0 10px, transparent 10px 20px);
-  background-size: 40px 2px;
-  background-repeat: repeat-x;
-  background-position: 0 100%;
-  animation: pulse-line 1.2s linear infinite;
+  background: linear-gradient(90deg, transparent, var(--color-blue), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: travel 1.15s ease-in-out infinite;
+  border-radius: var(--radius-pill);
+}
+
+@keyframes travel {
+  0% { background-position: -40% 0; }
+  100% { background-position: 140% 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .working {
-    animation: none;
+  .working { animation: none; background-position: 50% 0; }
+}
+
+@layer base {
+  .grid > * {
+    min-width: 0;
   }
 }

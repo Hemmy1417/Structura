@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { isAddress } from "viem";
 
 import { Field, Notice } from "@/components/bits";
-import { Section, Sheet } from "@/components/Sheet";
+import { Band, PageHead, Section } from "@/components/Page";
 import { TxPanel, type TxOutcome } from "@/components/TxPanel";
 import { CONTRACT_ADDRESS } from "@/lib/config";
 import { useTransactionKit } from "@/lib/kit";
@@ -74,106 +74,118 @@ export default function NewProject() {
   const ready = Object.keys(problems).length === 0;
 
   return (
-    <Sheet
-      number="S-02"
-      title="New project"
-      lead={
-        <p>
-          You become the client. Name the contractor and, if you want an independent attestation, an inspector.
-          Each of them accepts with their own signature before anything is judged.
-        </p>
-      }
-    >
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <form className="grid gap-8" onSubmit={(e) => { e.preventDefault(); if (ready) setReview(true); }}>
-          <Section n={1} title="The project">
-            <div className="grid gap-4">
-              <Field label="Title" error={review ? problems.title : undefined}>
-                <input className="field" value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Residential building, foundation phase" />
-              </Field>
-              <Field label="Site" hint="Where the work happens, as the parties will recognise it.">
-                <input className="field" value={site} maxLength={200} onChange={(e) => setSite(e.target.value)}
-                  placeholder="Plot 14, Canal Road" />
-              </Field>
-              <Field label="Description" hint="Optional. The milestones carry the contractual terms.">
-                <textarea className="field" value={description} maxLength={2000} onChange={(e) => setDescription(e.target.value)} />
-              </Field>
-            </div>
-          </Section>
+    <>
+      <PageHead
+        crumbs={[{ label: "Projects", href: "/projects" }]}
+        kicker="New project"
+        title="You become the client."
+        lead={
+          <p>
+            Name the contractor and, if you want an independent attestation, an inspector. Each of them
+            accepts with their own signature before anything is judged.
+          </p>
+        }
+      />
 
-          <Section n={2} title="The parties">
-            <div className="grid gap-4">
-              <Field label="Client" hint="The wallet that signs this project.">
-                <input className="field figure" value={me || "Connect a wallet"} disabled />
-              </Field>
-              <Field label="Contractor's wallet" error={problems.contractor && contractor ? problems.contractor : review ? problems.contractor : undefined}>
-                <input className="field figure" value={contractor} onChange={(e) => setContractor(e.target.value)} placeholder="0x…" spellCheck={false} />
-              </Field>
-              <Field label="Inspector's wallet (optional)" error={problems.inspector}
-                hint="An independent party whose report the terms can require.">
-                <input className="field figure" value={inspector} onChange={(e) => setInspector(e.target.value)} placeholder="0x…" spellCheck={false} />
-              </Field>
-            </div>
-          </Section>
+      <Band tone="canvas" wide>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <form className="grid gap-10" onSubmit={(e) => { e.preventDefault(); if (ready) setReview(true); }}>
+            <Section title="The project">
+              <div className="card grid gap-5">
+                <Field label="Title" error={review ? problems.title : undefined}>
+                  <input className="input" value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Residential building, foundation phase" />
+                </Field>
+                <Field label="Site" hint="Where the work happens, as the parties will recognise it.">
+                  <input className="input" value={site} maxLength={200} onChange={(e) => setSite(e.target.value)}
+                    placeholder="Plot 14, Canal Road" />
+                </Field>
+                <Field label="Description" hint="Optional. The milestones carry the contractual terms.">
+                  <textarea className="input" value={description} maxLength={2000} onChange={(e) => setDescription(e.target.value)} />
+                </Field>
+              </div>
+            </Section>
 
-          <Section n={3} title="Money and time">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Opening escrow" error={problems.escrow} hint="GEN held by the contract. You can add more later.">
-                <input className="field figure" inputMode="decimal" value={escrow} onChange={(e) => setEscrow(e.target.value)} placeholder="5" />
-              </Field>
-              <Field label="Appeal window" hint="How long the losing side has to contest a decision.">
-                <select className="field" value={windowSeconds} onChange={(e) => setWindowSeconds(Number(e.target.value))}>
-                  {WINDOWS.map((o) => <option key={o.seconds} value={o.seconds}>{o.text}</option>)}
-                </select>
-              </Field>
-            </div>
-          </Section>
+            <Section title="The parties">
+              <div className="card grid gap-5">
+                <Field label="Client" hint="The wallet that signs this project.">
+                  <input className="input tabular" value={me || "Connect a wallet"} disabled />
+                </Field>
+                <Field label="Contractor's wallet" error={problems.contractor && contractor ? problems.contractor : review ? problems.contractor : undefined}>
+                  <input className="input tabular" value={contractor} onChange={(e) => setContractor(e.target.value)} placeholder="0x" spellCheck={false} />
+                </Field>
+                <Field label="Inspector's wallet, optional" error={problems.inspector}
+                  hint="An independent party whose report the terms can require.">
+                  <input className="input tabular" value={inspector} onChange={(e) => setInspector(e.target.value)} placeholder="0x" spellCheck={false} />
+                </Field>
+              </div>
+            </Section>
 
-          {!review ? (
-            <div className="flex flex-wrap items-center gap-3">
-              <button type="submit" className="btn btn-primary" disabled={!ready || !w.address || !w.chainOk}>
-                Review and sign
-              </button>
-              {!w.address ? <span className="text-sm text-ink-3">Connect a wallet to sign.</span>
-                : !w.chainOk ? <span className="text-sm text-ink-3">Switch the wallet to Studio Next.</span> : null}
-            </div>
-          ) : null}
-        </form>
+            <Section title="Money and time">
+              <div className="card grid gap-5 sm:grid-cols-2">
+                <Field label="Opening escrow" error={problems.escrow} hint="GEN held by the contract. You can add more later.">
+                  <input className="input tabular" inputMode="decimal" value={escrow} onChange={(e) => setEscrow(e.target.value)} placeholder="5" />
+                </Field>
+                <Field label="Appeal window" hint="How long the losing side has to contest a decision.">
+                  <select className="input" value={windowSeconds} onChange={(e) => setWindowSeconds(Number(e.target.value))}>
+                    {WINDOWS.map((o) => <option key={o.seconds} value={o.seconds}>{o.text}</option>)}
+                  </select>
+                </Field>
+              </div>
+            </Section>
 
-        <aside className="grid content-start gap-4">
-          <div className="panel p-4 text-sm">
-            <p className="label">What happens next</p>
-            <ol className="mt-2 grid gap-2 text-ink-2">
-              <li>1. You add milestones: terms, criteria, the evidence each needs, a payment and a deadline.</li>
-              <li>2. The contractor signs the project and its terms.</li>
-              <li>3. Evidence is filed; validators judge each milestone.</li>
-              <li>4. An acceptance pays after your window to contest it.</li>
-            </ol>
-          </div>
-          {review && kit ? (
-            <TxPanel
-              kit={kit}
-              tx={tx}
-              value={value}
-              confirmText={value > 0n ? `Create and escrow ${present.gen(value)}` : "Create the project"}
-              onDone={(o) => void finished(o)}
-              onClose={() => setReview(false)}
-            />
-          ) : review && !kit ? (
-            <Notice tone="amber" title="Connect a wallet on Studio Next to sign" />
-          ) : null}
-          {outcome?.kind === "refused" ? (
-            <Notice tone="fail" title="The contract refused the project">
-              <p>{present.refusal(outcome.text)}</p>
-            </Notice>
-          ) : outcome?.kind === "unknown" ? (
-            <Notice tone="amber" title="Created, but its number could not be read">
-              <p>Open the register; your project is the newest one.</p>
-            </Notice>
-          ) : null}
-        </aside>
-      </div>
-    </Sheet>
+            {!review ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="submit" className="btn btn-primary" disabled={!ready || !w.address || !w.chainOk}>
+                  Review and sign
+                </button>
+                {!w.address ? <span className="body-sm text-iron">Connect a wallet to sign.</span>
+                  : !w.chainOk ? <span className="body-sm text-iron">Switch the wallet to Studio Next.</span> : null}
+              </div>
+            ) : null}
+          </form>
+
+          <aside className="grid content-start gap-4">
+            <div className="card-quiet">
+              <p className="kicker">What happens next</p>
+              <ol className="mt-4 grid gap-3">
+                {[
+                  "You add milestones: terms, criteria, the evidence each needs, a payment and a deadline.",
+                  "The contractor signs the project and its terms.",
+                  "Evidence is filed, and validators judge each milestone.",
+                  "An acceptance pays after your window to contest it.",
+                ].map((step, i) => (
+                  <li key={step} className="grid grid-cols-[1.5rem_1fr] gap-2">
+                    <span className="caption tabular">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="body-sm text-slate">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            {review && kit ? (
+              <TxPanel
+                kit={kit}
+                tx={tx}
+                value={value}
+                confirmText={value > 0n ? `Create and escrow ${present.gen(value)}` : "Create the project"}
+                onDone={(o) => void finished(o)}
+                onClose={() => setReview(false)}
+              />
+            ) : review && !kit ? (
+              <Notice tone="blue" title="Connect a wallet on Studio Next to sign" />
+            ) : null}
+            {outcome?.kind === "refused" ? (
+              <Notice tone="orange" title="The contract refused the project">
+                <p>{present.refusal(outcome.text)}</p>
+              </Notice>
+            ) : outcome?.kind === "unknown" ? (
+              <Notice tone="teal" title="Created, but its record could not be read back">
+                <p>Open the register; your project is the newest one.</p>
+              </Notice>
+            ) : null}
+          </aside>
+        </div>
+      </Band>
+    </>
   );
 }

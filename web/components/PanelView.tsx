@@ -29,29 +29,29 @@ export function PanelView({ hash, source }: { hash: string; source: string }) {
     return () => { alive = false; };
   }, [hash]);
 
-  if (failed) return <p className="text-sm text-ink-3">The transaction&apos;s receipt could not be read right now.</p>;
-  if (!panel) return <div className="working h-[2px] w-1/2" aria-label="Reading the receipt" />;
+  if (failed) return <p className="body-sm text-iron">The transaction&apos;s receipt could not be read right now.</p>;
+  if (!panel) return <div className="working h-[3px] w-1/2" aria-label="Reading the receipt" />;
 
   return (
     <div className="grid gap-4">
-      <p className="text-sm text-ink-2">
-        {present.plural(panel.rotations.length, "leader rotation")}; the transaction is {panel.status.toLowerCase()}
-        {panel.result ? ` (${present.humanize(panel.result).toLowerCase()})` : ""}. Found through {source}.{" "}
-        <a className="underline" href={txUrl(hash)} target="_blank" rel="noreferrer">Open it on the explorer</a>
+      <p className="body-sm text-slate">
+        {present.plural(panel.rotations.length, "leader rotation")}, and the transaction is {panel.status.toLowerCase()}
+        {panel.result ? `, ${present.humanize(panel.result).toLowerCase()}` : ""}. Found through {source}.{" "}
+        <a className="link" href={txUrl(hash)} target="_blank" rel="noreferrer">Open it on the explorer</a>
       </p>
       {panel.rotations.map((r, i) => (
-        <div key={i} className="border border-line">
-          <p className="label border-b border-line px-3 py-1.5">
+        <div key={i} className="overflow-hidden rounded-[10px] border border-fog">
+          <p className="caption border-b border-fog bg-canvas px-4 py-2">
             Rotation {i + 1}{r.label ? `: ${present.rotationOutcome(r.label)}` : ""}
           </p>
-          <ul className="divide-y divide-line-soft">
+          <ul className="divide-y divide-fog">
             {r.nodes.map((n, j) => (
-              <li key={j} className="grid gap-1 px-3 py-2 text-sm sm:grid-cols-[11rem_12rem_1fr]">
+              <li key={j} className="body-sm grid gap-1 px-4 py-3 sm:grid-cols-[11rem_11rem_1fr]">
                 <span className="font-semibold">{n.leader ? "Leader" : `Validator ${j}`}: {n.model}</span>
-                <span className={n.vote === "disagree" ? "text-fail" : n.vote === "agree" || n.vote === "proposed" ? "text-met" : "text-ink-3"}>
+                <span className={n.vote === "disagree" ? "text-orange" : n.vote === "agree" || n.vote === "proposed" ? "text-green" : "text-iron"}>
                   {VOTE[n.vote] ?? present.humanize(n.vote)}
                 </span>
-                <span className="text-ink-2">{n.note}</span>
+                <span className="text-slate">{present.prose(n.note)}</span>
               </li>
             ))}
           </ul>

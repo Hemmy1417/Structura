@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
-import { Azeret_Mono, Instrument_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import "./globals.css";
 import { Shell } from "@/components/Shell";
 import { WalletProvider } from "@/lib/wallet";
 
-const instrument = Instrument_Sans({
+// One family, two roles: 600 for every headline (nothing heavier), 400 for
+// everything a person reads.
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument",
-});
-const azeret = Azeret_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-azeret",
+  weight: ["400", "600"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${instrument.variable} ${azeret.variable}`}>
+    <html lang="en" className={inter.variable}>
       <body>
         <WalletProvider>
           <Shell>{children}</Shell>

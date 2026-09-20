@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import { Copyable, Loading, ReadFailure } from "@/components/bits";
-import { Section, Sheet } from "@/components/Sheet";
+import { Chip, CopyRow, Fold, Loading, ReadFailure } from "@/components/bits";
+import { Band, Hero, Section } from "@/components/Page";
 import { addressUrl, CHAIN_ID, RPC_URL, txUrl } from "@/lib/chain";
 import { CONTRACT_ADDRESS, IS_RECORD, RECORD_ADDRESS, REPO_URL, SOURCE_URL } from "@/lib/config";
 import * as present from "@/lib/present";
@@ -25,95 +25,147 @@ export default function Verify() {
   const proofs = log.address?.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() ? log.proofs ?? [] : [];
 
   return (
-    <Sheet
-      number="S-04"
-      title="Verification"
-      lead={<p>How to check, without trusting this app, that the contract you are reading is the one in the repository and behaves as described.</p>}
-    >
-      <div className="grid max-w-5xl gap-10">
-        <Section n={1} title="The deployment">
-          <dl className="grid gap-3 text-sm sm:grid-cols-[12rem_1fr]">
-            <dt className="text-ink-2">Contract</dt>
-            <dd className="grid gap-1">
-              <Copyable value={CONTRACT_ADDRESS} />
-              <a className="underline" href={addressUrl(CONTRACT_ADDRESS)} target="_blank" rel="noreferrer">Open it on the Studio Next explorer</a>
-            </dd>
-            <dt className="text-ink-2">Standing</dt>
-            <dd>{IS_RECORD ? "The deployment of record." : <>A test deployment. The deployment of record is <Copyable value={RECORD_ADDRESS} display={present.shortAddress(RECORD_ADDRESS)} />.</>}</dd>
-            <dt className="text-ink-2">Source</dt>
-            <dd><a className="underline" href={SOURCE_URL} target="_blank" rel="noreferrer">contracts/structura.py</a>{log.source_commit ? <span className="text-ink-3">, commit {log.source_commit}</span> : null}</dd>
-            <dt className="text-ink-2">Rules</dt>
-            <dd>{error ? <ReadFailure error={error} /> : cfg ? <span className="figure">{cfg.ruleset}</span> : <span className="text-ink-3">reading…</span>}</dd>
-            <dt className="text-ink-2">Network</dt>
-            <dd>GenLayer Studio Next, chain <span className="figure">{CHAIN_ID}</span>, <span className="figure break-all">{RPC_URL}</span></dd>
-          </dl>
-        </Section>
+    <>
+      <Hero
+        kicker="Verification"
+        title={<>Check it yourself, without <span className="tint-blue">trusting</span> this app.</>}
+        lead={
+          <p>
+            The contract on chain is byte for byte the contract in the repository, and every live proof below is a
+            transaction anyone can open.
+          </p>
+        }
+        actions={
+          <>
+            <a className="btn btn-primary no-underline" href={addressUrl(CONTRACT_ADDRESS)} target="_blank" rel="noreferrer">
+              Open the contract on the explorer
+            </a>
+            <a className="btn btn-neutral no-underline" href={SOURCE_URL} target="_blank" rel="noreferrer">Read the source</a>
+          </>
+        }
+      />
 
-        <Section n={2} title="Check the bytes yourself">
-          <ol className="grid gap-3 text-sm text-ink-2">
-            <li>
-              <p>1. Fetch the deployed source and diff it against the repository, byte for byte:</p>
-              <pre className="panel mt-1 overflow-x-auto p-3 font-mono text-xs text-ink">{`git clone ${REPO_URL}
+      <Band tone="canvas" wide>
+        <Section
+          title="The deployment"
+          aside={IS_RECORD ? <Chip tone="green">The deployment of record</Chip> : <Chip tone="orange">A test deployment</Chip>}
+        >
+          <div className="card">
+            <dl className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <dt className="caption">Network</dt>
+                <dd className="mt-1">GenLayer Studio Next, chain {CHAIN_ID}</dd>
+              </div>
+              <div>
+                <dt className="caption">Rules</dt>
+                <dd className="mt-1">{error ? <ReadFailure error={error} /> : cfg ? present.prose(cfg.ruleset) : "reading"}</dd>
+              </div>
+              <div>
+                <dt className="caption">Source</dt>
+                <dd className="mt-1">
+                  <a className="link" href={SOURCE_URL} target="_blank" rel="noreferrer">contracts/structura.py</a>
+                  {log.source_commit ? `, commit ${log.source_commit}` : ""}
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-6">
+              <Fold summary="Addresses and endpoints">
+                <CopyRow label="Contract" value={CONTRACT_ADDRESS} href={addressUrl(CONTRACT_ADDRESS)} />
+                {IS_RECORD ? null : <CopyRow label="Deployment of record" value={RECORD_ADDRESS} href={addressUrl(RECORD_ADDRESS)} />}
+                <CopyRow label="Network endpoint" value={RPC_URL} />
+                <CopyRow label="Repository" value={REPO_URL} href={REPO_URL} />
+              </Fold>
+            </div>
+          </div>
+        </Section>
+      </Band>
+
+      <Band tone="white" wide>
+        <Section title="Check the bytes yourself">
+          <ol className="grid gap-6">
+            <li className="card-quiet">
+              <p className="font-semibold">1. Fetch the deployed source and diff it against the repository</p>
+              <pre className="mt-3 overflow-x-auto rounded-[10px] bg-obsidian p-4 text-[13px] leading-relaxed text-[#f5f5f7]">{`git clone ${REPO_URL}
 cd Structura/scripts && pnpm install
 node deploy.mjs verify ${CONTRACT_ADDRESS}`}</pre>
+              <p className="body-sm mt-3 text-slate">It prints the digest of both, and says whether they are identical.</p>
             </li>
-            <li>
-              <p>2. Run the contract&apos;s tests: a strict harness, the official GenLayer direct runner, a randomized invariant walk, and a mutation sweep that breaks each safety check and proves the suite notices:</p>
-              <pre className="panel mt-1 overflow-x-auto p-3 font-mono text-xs text-ink">{`python -m pytest tests/direct -q
+            <li className="card-quiet">
+              <p className="font-semibold">2. Run the contract&apos;s tests</p>
+              <pre className="mt-3 overflow-x-auto rounded-[10px] bg-obsidian p-4 text-[13px] leading-relaxed text-[#f5f5f7]">{`python -m pytest tests/direct -q
 python tests/mutation/mutate.py`}</pre>
+              <p className="body-sm mt-3 text-slate">
+                A strict harness, the official GenLayer direct runner, a randomized invariant walk, and a sweep
+                that breaks each safety check to prove the suite notices.
+              </p>
             </li>
-            <li>3. On any payment certificate, press recompute: the stored bytes are read back and hashed in your browser, and compared with the digest the contract recorded when the item was filed.</li>
+            <li className="card-quiet">
+              <p className="font-semibold">3. Recompute a digest in your own browser</p>
+              <p className="body-sm mt-3 text-slate">
+                Open any round record and press recompute on an evidence item: this page reads the stored bytes
+                back from the chain and hashes them here, then compares the result with the digest the contract
+                recorded when the item was filed.
+              </p>
+            </li>
           </ol>
         </Section>
+      </Band>
 
-        <Section n={3} title="Live proofs on this deployment" aside={proofs.length ? `${present.plural(proofs.length, "transaction")}, each asserted by the proof script` : undefined}>
+      <Band tone="canvas" wide>
+        <Section
+          title="Live proofs on this deployment"
+          aside={proofs.length ? `${present.plural(proofs.length, "transaction")}, each asserted by the proof script` : undefined}
+        >
           {proofs.length === 0 ? (
-            <p className="text-sm text-ink-2">
-              The proof run&apos;s log is published with the repository (docs/proofs). Every round is also listed on{" "}
-              <a className="underline" href={addressUrl(CONTRACT_ADDRESS)} target="_blank" rel="noreferrer">the contract&apos;s explorer page</a>.
+            <p className="text-slate">
+              The proof run&apos;s log is published with the repository. Every round is also listed on{" "}
+              <a className="link" href={addressUrl(CONTRACT_ADDRESS)} target="_blank" rel="noreferrer">the contract&apos;s page on the explorer</a>.
             </p>
           ) : (
-            <div className="overflow-x-auto border border-ink">
-              <table className="schedule min-w-[640px]">
-                <thead><tr><th>Proof</th><th>What it shows</th><th>Outcome</th><th>Transaction</th></tr></thead>
-                <tbody>
-                  {proofs.map((pr) => (
-                    <tr key={pr.hash}>
-                      <td className="font-semibold">{pr.name}</td>
-                      <td className="text-sm text-ink-2">{pr.claim}</td>
-                      <td className="text-sm">{pr.outcome}</td>
-                      <td><a className="figure text-sm underline" href={txUrl(pr.hash)} target="_blank" rel="noreferrer">{present.shortHash(pr.hash)}</a></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ul className="grid gap-4">
+              {proofs.map((pr) => (
+                <li key={pr.hash} className="card-quiet">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="max-w-[60ch]">
+                      <p className="font-semibold">{present.prose(pr.claim)}</p>
+                      <p className="body-sm mt-1.5 text-slate">{present.prose(pr.outcome)}</p>
+                    </div>
+                    <a className="btn btn-neutral btn-sm no-underline" href={txUrl(pr.hash)} target="_blank" rel="noreferrer">
+                      Open the transaction
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </Section>
+      </Band>
 
-        <Section n={4} title="Limits the contract enforces">
+      <Band tone="white" wide>
+        <Section title="Limits the contract enforces">
           {!cfg ? <Loading what="the limits" /> : (
-            <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+            <dl className="grid gap-x-10 gap-y-4 sm:grid-cols-2">
               {[
                 ["Smallest milestone payment", present.gen(cfg.min_payment_wei)],
                 ["Appeal window", `${present.duration(cfg.min_appeal_window_seconds)} to ${present.duration(cfg.max_appeal_window_seconds)}`],
-                ["Appeal lapses after its evidence period", present.duration(cfg.appeal_lapse_seconds)],
+                ["An appeal lapses after its evidence period", present.duration(cfg.appeal_lapse_seconds)],
                 ["Assessments per version of the terms", String(cfg.max_assessments_per_version)],
                 ["Criteria per milestone", String(cfg.max_criteria)],
-                ["Image size", present.size(cfg.image_max_bytes)],
+                ["Largest image", present.size(cfg.image_max_bytes)],
                 ["Contractor's evidence per version", `${cfg.quotas.CONTRACTOR.IMAGE} images, ${cfg.quotas.CONTRACTOR.TEXT} texts`],
                 ["Client's evidence per version", `${cfg.quotas.CLIENT.IMAGE} images, ${cfg.quotas.CLIENT.TEXT} texts`],
                 ["Inspector's evidence per version", `${cfg.quotas.INSPECTOR.IMAGE} images, ${cfg.quotas.INSPECTOR.TEXT} texts`],
-                ["Most one round reads", `${cfg.round_capacity.IMAGE} images, ${cfg.round_capacity.TEXT} texts`],
+                ["The most one round reads", `${cfg.round_capacity.IMAGE} images, ${cfg.round_capacity.TEXT} texts`],
               ].map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[1fr_auto] gap-3 border-b border-line-soft py-1.5">
-                  <dt className="text-ink-2">{k}</dt><dd className="figure text-right">{v}</dd>
+                <div key={k} className="flex items-baseline justify-between gap-4 border-b border-fog py-2">
+                  <dt className="body-sm text-slate">{k}</dt>
+                  <dd className="body-sm tabular text-right">{v}</dd>
                 </div>
               ))}
             </dl>
           )}
         </Section>
-      </div>
-    </Sheet>
+      </Band>
+    </>
   );
 }
